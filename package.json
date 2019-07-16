@@ -1,0 +1,70 @@
+{
+	"name": "mmtplugin",
+	"displayName": "MMTPlugin",
+	"description": "Plugin for MMT",
+	"version": "0.0.1",
+	"engines": {
+		"vscode": "^1.36.0"
+	},
+	"categories": [
+		"Other"
+	],
+	"activationEvents": [
+		"onCommand:extension.helloWorld",
+		"onLanguage:mmt"
+	],
+	"main": "./out/extension.js",
+	"contributes": {
+		"commands": [{
+			"command": "extension.helloWorld",
+			"title": "Hello World"
+		}],
+		"languages": [{
+			"id": "mmt",
+			"extensions": [ ".mmt" ],
+			"configuration": "./mmt-language.json"
+		}],
+		"configuration":[
+			{
+				"title": "MMT",
+				"properties": {
+					"mmt.jarpath":{
+						"type": "string",
+						"default": "",
+						"markdownDescription": "Path to your [mmt.jar](https://github.com/UniFormal/MMT/releases)"
+					  },
+					"mmt.serverProperties":{
+						"type":"string",
+						"default":"",
+						"markdownDescription": "Dunno yet"
+					}
+				}
+			}
+		]
+	},
+	"scripts": {
+		"vscode:prepublish": "npm run compile",
+		"compile": "tsc -p ./",
+		"watch": "tsc -watch -p ./",
+		"pretest": "npm run compile",
+		"test": "node ./out/test/runTest.js"
+	},
+	"devDependencies": {
+		"@types/glob": "^7.1.1",
+		"@types/mocha": "^5.2.6",
+		"@types/node": "^10.12.21",
+		"@types/vscode": "^1.36.0",
+		"glob": "^7.1.4",
+		"mocha": "^6.1.4",
+		"typescript": "^3.3.1",
+		"tslint": "^5.12.1",
+		"vscode-test": "^1.0.0-next.0"
+	},
+	"dependencies": {
+		"locate-java-home": "^1.1.2",
+		"promisify-child-process": "^3.1.1",
+		"@types/shell-quote": "^1.6.0",
+		"shell-quote": "^1.6.1",
+		"vscode-languageclient": "^5.2.1"
+	}
+}
