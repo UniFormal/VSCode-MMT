@@ -24,6 +24,47 @@
 			"extensions": [ ".mmt" ],
 			"configuration": "./mmt-language.json"
 		}],
+		"colors": [{
+			"id": "mmt.keyword",
+			"description": "MMT Keywords (theory,namespace,etc)",
+			"defaults": {
+				"dark": "#FF8D33",
+				"light": "#FF8D33",
+				"highContrast": "#FF8D00"
+			}
+		},{
+			"id": "mmt.comment",
+			"description": "MMT Comments (non-semantic)",
+			"defaults": {
+				"dark": "#767676",
+				"light": "#7676",
+				"highContrast": "#767676"
+			}
+		},{
+			"id": "mmt.scomment",
+			"description": "MMT Comments (semantic)",
+			"defaults": {
+				"dark": "#428850",
+				"light": "#428850",
+				"highContrast": "#428850"
+			}
+		},{
+			"id": "mmt.name",
+			"description": "MMT Names (identifiers)",
+			"defaults": {
+				"dark": "#e7e302",
+				"light": "#777500",
+				"highContrast": "#777500"
+			}
+		},{
+			"id": "mmt.terminit",
+			"description": "MMT Names (identifiers)",
+			"defaults": {
+				"dark": "#6112e0",
+				"light": "#410000",
+				"highContrast": "#4100FF"
+			}
+		}],
 		"configuration":[
 			{
 				"title": "MMT",
@@ -61,10 +102,15 @@
 		"vscode-test": "^1.0.0-next.0"
 	},
 	"dependencies": {
+		"inversify": "5.0.1",
 		"locate-java-home": "^1.1.2",
 		"promisify-child-process": "^3.1.1",
 		"@types/shell-quote": "^1.6.0",
 		"shell-quote": "^1.6.1",
-		"vscode-languageclient": "^5.2.1"
+		"vscode-languageclient": "^5.2.1",
+		"base64-arraybuffer": "^0.2.0",
+		"uuid": "^3.3.2",
+		"@types/uuid": "^3.4.3",
+		"vscode-uri": "^2.0.2"
 	}
 }

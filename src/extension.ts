@@ -2,11 +2,16 @@
 // Import the module and reference it with the alias vscode in your code below
 import * as vscode from 'vscode';
 import * as language from 'vscode-languageclient';
+import * as rpc from 'vscode-jsonrpc';
 import {getJavaHome} from "./util/getJavaHome";
 import * as path from "path";
 import {getJavaOptions} from "./util/getJavaOptions";
 import { spawn } from "promisify-child-process";
 import * as net from 'net';
+import { SemanticHighlightingParams } from './util/highlighting/semantic-highlighting/semantic-highlighting-protocol';
+import { setFlagsFromString } from 'v8';
+import { SemanticHighlightFeature } from './util/highlighting/semantic-highlighting/semantic-highlighting-feature';
+import { MMTSemanticHighlightingService } from './semantic-highlighting-service';
 
 const outputChannel = vscode.window.createOutputChannel("MMT");
 const openSettingsAction = "Open settings";
@@ -29,17 +34,25 @@ export function activate(context: vscode.ExtensionContext) {
 	launchRemote(context);
 }
 
-function handleClient(client: language.LanguageClient, context: vscode.ExtensionContext) {
-	const features = new MMTFeatures();
+function handleClient(client: MMTLanguageClient, context: vscode.ExtensionContext) {
+	const features = new MMTFeatures(client);
 	client.registerFeature(features);
 
 	function registerCommand(command: string, callback: (...args: any[]) => any) {
 		context.subscriptions.push(vscode.commands.registerCommand(command, callback));
 	}
 
+	const service = new MMTSemanticHighlightingService(client);
+
+	client.registerFeature(MMTSemanticHighlightingService.createNewFeature(service,client));
+
 	context.subscriptions.push(client.start());
 
 	outputChannel.appendLine("Done.");
+
+
+	// client.onRequest("textDocument/semanticHighlighting",outputChannel.appendLine);
+	//client.onNotification("textDocument/semanticHighlighting",outputChannel.appendLine);
 }
 
 function launchRemote(context: vscode.ExtensionContext) {
@@ -58,9 +71,7 @@ function launchRemote(context: vscode.ExtensionContext) {
     };
 
 	// Create the language client and start the client.	
-	const client = new language.LanguageClient(
-		"mmt",
-		"MMT",
+	const client = new MMTLanguageClient(
 		serverOptions,
 		clientOptions
 	);
@@ -136,9 +147,7 @@ function launchMMT(context: vscode.ExtensionContext, javaHome: string) {
 		debug: { command: javaPath, args: launchArgs }
 	};
 
-	const client = new language.LanguageClient(
-		"mmt",
-		"MMT",
+	const client = new MMTLanguageClient(
 		serverOptions,
 		clientOptions
 	);
@@ -156,13 +165,29 @@ function javaErr() {
   	});
 }
 
+export class MMTLanguageClient extends language.LanguageClient {
+	public languageId = "mmt";
+
+	constructor(serverOptions:language.ServerOptions,clientOptions:language.LanguageClientOptions) {
+		super("mmt","MMT",serverOptions,clientOptions);
+	}
+}
+
 // this method is called when your extension is deactivated
 export function deactivate() {}
 
 export interface TreeViewProvider {}
 
+// export interface 
+
 export class MMTFeatures implements language.StaticFeature {
-	treeViewProvider?: TreeViewProvider;
+
+	client : language.LanguageClient;
+
+	constructor(cl:language.LanguageClient) {
+		this.client = cl;
+	}
+
 	fillInitializeParams(params: language.InitializeParams): void {
 	  if (!params.capabilities.experimental) {
 		params.capabilities.experimental = {};
@@ -171,8 +196,6 @@ export class MMTFeatures implements language.StaticFeature {
 	}
 	fillClientCapabilities(): void {}
 	initialize(capabilities: language.ServerCapabilities): void {
-	  if (capabilities.experimental) {
-		this.treeViewProvider = capabilities.experimental.treeViewProvider;
-	  }
+		outputChannel.append("");
 	}
-  }
+}
