@@ -30,8 +30,8 @@ const clientOptions: language.LanguageClientOptions = {
 // your extension is activated the very first time the command is executed
 export function activate(context: vscode.ExtensionContext) {
 
-	// launchLocal(context);
-	launchRemote(context);
+	launchLocal(context);
+	// launchRemote(context);
 }
 
 function handleClient(client: MMTLanguageClient, context: vscode.ExtensionContext) {
@@ -105,6 +105,8 @@ function launchMMT(context: vscode.ExtensionContext, javaHome: string) {
 	  return;
 	}
 
+	const projectpath = vscode.workspace.workspaceFolders[0].uri;
+
 	const config = vscode.workspace.getConfiguration("mmt");
   
 	outputChannel.appendLine(`Java home: ${javaHome}`);
@@ -135,7 +137,8 @@ function launchMMT(context: vscode.ExtensionContext, javaHome: string) {
 		"-Xmx8192m",
 		"-classpath",
 		mmtJarPath,
-		"info.kwarc.mmt.lsp.Local"
+		"info.kwarc.mmt.lsp.Local",
+		projectpath.path
 	  ];
 	const launchArgs = baseProperties
 		.concat(javaOptions);

@@ -36,7 +36,17 @@ export class MMTSemanticHighlightingService extends SemanticHighlightingService 
         this.client = cl;
     }
     
-    static _list = ['mmt.keyword','mmt.comment',"mmt.scomment","mmt.name","mmt.terminit"];
+    static _list = ['mmt.keyword'
+        ,'mmt.comment'
+        ,"mmt.scomment"
+        ,"mmt.name"
+        ,"mmt.md"
+        ,"mmt.dd"
+        ,"mmt.od"
+        ,"mmt.terminit"
+        ,"mmt.termchecked"
+        ,"mmt.termerrored"
+    ];
 
     static _decorators = MMTSemanticHighlightingService._list.map<vscode.DecorationRenderOptions>(s => 
         ({ 

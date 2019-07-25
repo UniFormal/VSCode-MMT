@@ -28,7 +28,7 @@
 			"id": "mmt.keyword",
 			"description": "MMT Keywords (theory,namespace,etc)",
 			"defaults": {
-				"dark": "#FF8D33",
+				"dark": "#a85c22",
 				"light": "#FF8D33",
 				"highContrast": "#FF8D00"
 			}
@@ -52,17 +52,57 @@
 			"id": "mmt.name",
 			"description": "MMT Names (identifiers)",
 			"defaults": {
-				"dark": "#e7e302",
+				"dark": "#b3b000",
 				"light": "#777500",
 				"highContrast": "#777500"
+			}
+		},{
+			"id": "mmt.md",
+			"description": "MMT Names (identifiers)",
+			"defaults": {
+				"dark": "#ff0000",
+				"light": "#8d0000",
+				"highContrast": "#8d0000"
+			}
+		},{
+			"id": "mmt.dd",
+			"description": "MMT Names (identifiers)",
+			"defaults": {
+				"dark": "#008d00",
+				"light": "#008d00",
+				"highContrast": "#008d00"
+			}
+		},{
+			"id": "mmt.od",
+			"description": "MMT Names (identifiers)",
+			"defaults": {
+				"dark": "#009edd",
+				"light": "#0000DD",
+				"highContrast": "#0000DD"
 			}
 		},{
 			"id": "mmt.terminit",
 			"description": "MMT Names (identifiers)",
 			"defaults": {
-				"dark": "#6112e0",
+				"dark": "#c053ff",
 				"light": "#410000",
 				"highContrast": "#4100FF"
+			}
+		},{
+			"id": "mmt.termchecked",
+			"description": "MMT Names (identifiers)",
+			"defaults": {
+				"dark": "#17c400",
+				"light": "#17c400",
+				"highContrast": "#17c400"
+			}
+		},{
+			"id": "mmt.termerrored",
+			"description": "MMT Names (identifiers)",
+			"defaults": {
+				"dark": "#ff1515",
+				"light": "#ff1515",
+				"highContrast": "#ff1515"
 			}
 		}],
 		"configuration":[
