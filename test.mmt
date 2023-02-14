@@ -1,0 +1,27 @@
+namespace http://cds.omdoc.org/urtheories❚
+
+import rules scala://mmt.kwarc.info❚
+
+theory Strings : ?LF =
+  string : type❙
+  empty  : string❙
+  concat : string ⟶ string ⟶ string❙
+
+  rule rules/lf?Realize string rules/api/uom?StandardString❙  
+  rule rules/lf?Realize empty rules/api/uom?StringOperations/Empty❙  
+  rule rules/lf?Realize concat rules/api/uom?StringOperations/Concat❙  
+
+  rule rules/literals?StandardStringInterpolation string concat❙
+❚
+
+theory StringInterpolationExample : ?Strings =
+
+  c: string❙
+  f: string ⟶ string ⟶ string❘= [x,y] concat x y❙
+  
+  q1: string❘ = s"AA"❙
+  q2: string❘ = s"AA ${q1}"❙ 
+  q3: string❘ = s"AA ${concat s"a" s"b"}"❙
+  q4: string❘ = s"AA ${f c s"BB"}"❙ 
+  q5: string❘ = s"AA ${f c s"BB ${f q1 q1}"}"❙
+❚
