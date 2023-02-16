@@ -1,68 +1,31 @@
 import * as vscode from 'vscode';
 import * as language from 'vscode-languageclient/node';
-import * as net from "net";
-
-import {getJavaHome} from "./util/getJavaHome";
-import {getJavaOptions} from "./util/getJavaOptions";
-import * as path from "path";
-import { LanguageClient } from 'vscode-languageclient/node';
 import * as debounce from "debounce";
 import { assert } from 'console';
-
-const outputChannel = vscode.window.createOutputChannel("MMT");
-const openSettingsAction = "Open settings";
-const openSettingsCommand = "workbench.action.openSettings";
-
-const clientOptions: language.LanguageClientOptions = {
-	documentSelector: [{ scheme: "file", language: "mmt" }],
-	synchronize: {
-		configurationSection: "mmt"
-	},
-	revealOutputChannelOn: language.RevealOutputChannelOn.Info,
-	outputChannel: outputChannel
-};
-
-interface BuildMessage {
-	file:string
-}
-
+import { MMTLanguageClient, launchMMT } from './client';
+import { outputChannel } from './output-channel';
 /**
- * invariant: if in extension context 'mmt.loaded' is true, then client is non-null.
+ * invariant: if in extension context 'mmt.loaded' is true, then client is non-null and client?.state === State.Running.
+ *
+ * todo: correct invariant documentation
  */
 let client: MMTLanguageClient|null = null;
 
 export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.executeCommand('setContext', 'mmt.loaded', false);
-	context.subscriptions.push(vscode.commands.registerCommand("mmt.buildmmtomdoc", () => {
-		const file = vscode.window.activeTextEditor?.document.fileName;
-		if (file) {
-			buildMMTOmdoc(file);
-		} else {
-			vscode.window.showInformationMessage("No currently opened file.");
+
+	context.subscriptions.push(vscode.commands.registerCommand("mmt.typecheck", () => {
+		const doc = vscode.window.activeTextEditor?.document;
+		if (doc) {
+			client?.typecheck(doc);
 		}
 	}));
-
-	const saveCheckTimeout = vscode.workspace.getConfiguration("mmt").get<number>("saveCheckTimeout") || -1;
-	assert(saveCheckTimeout === -1 || saveCheckTimeout >= 0);
-
-	if (saveCheckTimeout !== -1) {
-		const debouncedSaveCheck = debounce((event: vscode.TextDocumentChangeEvent) => {
-			event.document.save().then(hasSaved => {
-				if (hasSaved && client !== null) { // important: recheck client's availability
-					buildMMTOmdoc(event.document.fileName);
-				}
-			});
-		}, saveCheckTimeout);
-
-		context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(event => {
-			if (event.document.languageId !== 'mmt' || client === null) {
-				return;
-			}
-
-			debouncedSaveCheck(event);
-		}));
-	}
-
+	context.subscriptions.push(vscode.commands.registerCommand("mmt.buildmmtomdoc", () => {
+		const doc = vscode.window.activeTextEditor?.document;
+		if (doc) {
+			client?.buildMMTOmdoc(doc);
+		}
+	}));
 	context.subscriptions.push(vscode.commands.registerCommand("mmt.reload", () => {
 		vscode.commands.executeCommand('setContext', 'mmt.loaded', false);
 		client?.dispose();
@@ -77,15 +40,45 @@ export function activate(context: vscode.ExtensionContext) {
 		loadMMTClient(context);
 	}));
 
-	loadMMTClient(context);
-}
+	const checkTimeout = vscode.workspace.getConfiguration("mmt").get<number>("checkTimeout") || -1;
+	assert(checkTimeout === -1 || checkTimeout >= 0);
 
-function buildMMTOmdoc(file: string) {
-	file = file.replace("c:", "C:"); // TODO hack
-	client?.sendNotification(
-		new language.ProtocolNotificationType<BuildMessage, void>("mmt/build/mmt-omdoc"),
-		{file}
-	);
+	if (checkTimeout !== -1) {
+		const debouncedCheck = debounce((event: vscode.TextDocumentChangeEvent) => {
+			client?.typecheck(event.document);
+		}, checkTimeout);
+
+		context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(event => {
+			if (event.document.languageId !== 'mmt') {
+				return;
+			}
+
+			debouncedCheck(event);
+		}));
+	}
+
+	const saveBuildTimeout = vscode.workspace.getConfiguration("mmt").get<number>("saveBuildTimeout") || -1;
+	assert(saveBuildTimeout === -1 || saveBuildTimeout >= 0);
+
+	if (saveBuildTimeout !== -1) {
+		const debouncedSaveBuild = debounce((event: vscode.TextDocumentChangeEvent) => {
+			event.document.save().then(hasSaved => {
+				if (hasSaved) {
+					client?.buildMMTOmdoc(event.document);
+				}
+			});
+		}, saveBuildTimeout);
+
+		context.subscriptions.push(vscode.workspace.onDidChangeTextDocument(event => {
+			if (event.document.languageId !== 'mmt') {
+				return;
+			}
+
+			debouncedSaveBuild(event);
+		}));
+	}
+
+	loadMMTClient(context);
 }
 
 function loadMMTClient(context: vscode.ExtensionContext) {
@@ -99,163 +92,31 @@ function loadMMTClient(context: vscode.ExtensionContext) {
 	if (vscode.workspace.workspaceFolders) {
 		const projectHome = vscode.workspace.workspaceFolders[0].uri.fsPath;
 		launchMMT(context, projectHome).then(newClient => {
-			client = newClient;
-			context.subscriptions.push(client);
+			newClient.onDidChangeState(event => {
+				switch (event.newState) {
+					case language.State.Running:
+						vscode.commands.executeCommand('setContext', 'mmt.loaded', true);
+						vscode.window.showInformationMessage("MMT client loaded.");
+						break;
 
-			vscode.commands.executeCommand('setContext', 'mmt.loaded', true);
-			vscode.window.showInformationMessage("MMT client loaded.");
+					case language.State.Stopped:
+						vscode.commands.executeCommand('setContext', 'mmt.loaded', false);
+						vscode.window.showInformationMessage("Try reloading the MMT client.", "reload").then(choice => {
+							if (choice === "reload") {
+								vscode.commands.executeCommand("mmt.reload");
+							}
+						});
+						break;
+				}
+				client = newClient;
+			});
+			context.subscriptions.push(newClient);
 		})
 		.catch(console.error.bind(console));
 	} else {
-		const message =
-			"MMT will not start because you've opened a single file and not a project directory.";
-		outputChannel.appendLine(message);
-		vscode.window.showErrorMessage(message, openSettingsAction).then(choice => {
-			if (choice === openSettingsAction) {
-				vscode.commands.executeCommand("workbench.action.openSettings");
-			}
-		});
+		outputChannel.appendLine("MMT will not start because you've opened a single file and not a project directory.");
 	}
 }
 
 export function deactivate() {
-}
-
-const lspMainClass = "info.kwarc.mmt.lsp.Local";
-const lspPort = 5007;
-
-function createServerOptionsForPort(): Promise<language.ServerOptions> {
-    return Promise.resolve(() => {
-        const socket = net.connect({port: lspPort});
-        return Promise.resolve<language.StreamInfo>({
-            writer: socket,
-            reader: socket
-        });
-    });
-}
-
-/**
- * 
- * @param projectHome must not contain double quotes
- * @returns 
- */
-function createServerOptionsForSBT(projectHome: string): Promise<language.ServerOptions> {
-	const mmtrepo = vscode.workspace.getConfiguration("mmt").get<string>("mmtrepo");
-	if (!mmtrepo) {
-		return Promise.reject();
-	}
-
-	const executable: language.Executable = {
-		command: "sbt",
-		args: [`runMain ${lspMainClass} "${projectHome}"`],
-		options: {
-			cwd: path.join(mmtrepo, "src"),
-			env: process.env,
-			shell: true // needed to execute sbt.bat (since it's a bat file)
-		}
-	};
-
-	console.log(executable);
-
-	return Promise.resolve({
-		run: executable,
-		debug: executable
-	});
-}
-
-async function createServerOptionsForJAR(projectHome: string): Promise<language.ServerOptions> {
-	const config = vscode.workspace.getConfiguration("mmt");
-
-	const javaHome = await getJavaHome();
-	const javaPath = path.join(javaHome, "bin", "java");
-	const mmtJarPath = config.get<string>("mmtjar");
-	if(!mmtJarPath) { 
-		vscode.window.showErrorMessage("Path to MMT jar not set", openSettingsAction)
-		.then(choice => {
-			if (choice === openSettingsAction) {
-				vscode.commands.executeCommand("workbench.action.openSettings");
-			}
-		});
-  		return Promise.reject();
-	}
-
-	const serverProperties: string[] = config
-		.get<string>("serverProperties")!
-		.split(" ")
-		.filter(e => e.length > 0);
-
-	const javaOptions = getJavaOptions(outputChannel);
-
-	const baseProperties = [
-		"-Xmx8192m",
-		"-classpath",
-		mmtJarPath,
-		lspMainClass,
-		projectHome
-	];
-	const launchArgs = baseProperties.concat(javaOptions);
-
-	outputChannel.appendLine("Initializing MMT LSP Server");
-
-	return Promise.resolve({
-		run:   { command: javaPath, args: launchArgs },
-		debug: { command: javaPath, args: launchArgs }
-	});
-}
-
-function createServerOptions(projectHome: string): Promise<language.ServerOptions> {
-	/*if (vscode.workspace.getConfiguration("mmt").get<boolean>("usesbt")) {
-		return createServerOptionsForSBT(projectHome);
-	} else {
-		return createServerOptionsForJAR(projectHome);
-	}*/
-	return createServerOptionsForPort();
-}
-
-async function launchMMT(context: vscode.ExtensionContext, projectHome: string): Promise<MMTLanguageClient> {
-	const serverOptions = await createServerOptions(projectHome);
-
-	const languageClient = new MMTLanguageClient(serverOptions, clientOptions);
-
-	languageClient.registerFeature(new BuildFeature(languageClient));
-	languageClient.start();
-
-	outputChannel.appendLine("Done starting client.");
-
-	return languageClient;
-}
-
-export class MMTLanguageClient extends language.LanguageClient {
-	public languageId = "mmt";
-
-	constructor(serverOptions: language.ServerOptions, clientOptions: language.LanguageClientOptions) {
-		super("mmt", "MMT", serverOptions, clientOptions);
-	}
-}
-
-export class BuildFeature implements language.StaticFeature {
-	client : language.LanguageClient;
-
-	constructor(cl:language.LanguageClient) {
-		this.client = cl;
-	}
-	fillClientCapabilities(capabilities: language.ClientCapabilities): void {}
-	fillInitializeParams?: ((params: language.InitializeParams) => void) | undefined;
-	// preInitialize?: ((capabilities: language.ServerCapabilities<any>, documentSelector: language.DocumentSelector | undefined) => void) | undefined;
-	initialize(capabilities: language.ServerCapabilities): void {
-		/*context.subscriptions.push(vscode.commands.registerCommand('mmt.buildmmtomdoc', () => {
-			vscode.window.showInformationMessage('Hello World from mmt!');
-		}));
-		outputChannel.append("");*/
-	}
-	dispose() : void {}
-
-	getState(): language.FeatureState {
-		return {
-			kind: 'document',
-			id: 'mmt.buildmmtomdoc',
-			registrations: true,
-			matches: true
-		};
-	}
 }

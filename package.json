@@ -17,9 +17,14 @@
   "contributes": {
     "commands": [
       {
+        "command": "mmt.typecheck",
+        "title": "Typecheck MMT",
+        "enablement": "editorLangId == mmt && mmt.loaded"
+      },
+      {
         "command": "mmt.buildmmtomdoc",
         "title": "Build mmt-omdoc",
-        "enablement": "editorFocus && editorLangId == mmt && mmt.loaded"
+        "enablement": "editorLangId == mmt && mmt.loaded"
       },
       {
         "command": "mmt.reload",
@@ -64,10 +69,15 @@
             "default": "",
             "markdownDescription": "Path to your [mmt.jar](https://github.com/UniFormal/MMT/releases)"
           },
-          "mmt.saveCheckTimeout": {
+          "mmt.checkTimeout": {
             "type": "number",
             "default": 1000,
-            "markdownDescription": "Timeout in milliseconds after which a changed MMT document should be auto-saved & checked. -1 for deactivating this feature."
+            "markdownDescription": "Timeout in milliseconds after which a changed MMT document should be checked. -1 for deactivating this feature."
+          },
+          "mmt.saveBuildTimeout": {
+            "type": "number",
+            "default": -1,
+            "markdownDescription": "Timeout in milliseconds after which a changed MMT document should be auto-saved & built. -1 for deactivating this feature."
           }
         }
       }
