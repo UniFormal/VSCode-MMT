@@ -1,14 +1,26 @@
 {
   "name": "mmt",
-  "displayName": "mmt",
+  "displayName": "MMT Language",
   "description": "Language and build support for the MMT language developed by the https://kwarc.info research group.",
   "version": "0.0.1",
   "engines": {
     "vscode": "^1.74.0"
   },
   "categories": [
-    "Other"
+    "Programming Languages"
   ],
+  "keywords": ["type theory", "mathematics", "logic", "formalization", "proof editor"],
+  "preview": true,
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UniFormal/VSCode-MMT.git"
+  },
+  "bugs": {
+    "url": "https://github.com/UniFormal/VSCode-MMT/issues"
+  },
+  "publisher": "UniFormal, kwarc research group",
+  "icon": "./img/logo_better_128x128.png",
   "activationEvents": [
     "onLanguage:mmt"
   ],
