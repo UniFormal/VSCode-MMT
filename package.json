@@ -40,6 +40,13 @@
         "configuration": "./mmt-language.json"
       }
     ],
+    "grammars": [
+      {
+        "language": "mmt",
+        "scopeName": "source.mmt",
+        "path": "./syntaxes/mmt.tmLanguage.json"
+      }
+    ],
     "configuration": [
       {
         "title": "MMT",
