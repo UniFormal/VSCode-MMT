@@ -27,9 +27,7 @@
   },
   "publisher": "UniFormal, kwarc research group",
   "icon": "img/logo_better_128x128.png",
-  "activationEvents": [
-    "onLanguage:mmt"
-  ],
+  "activationEvents": [],
   "main": "./out/extension.js",
   "contributes": {
     "commands": [
