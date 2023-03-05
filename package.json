@@ -1,0 +1,139 @@
+{
+  "name": "mmt",
+  "displayName": "MMT Language",
+  "description": "Language and build support for the MMT language developed by the https://kwarc.info research group.",
+  "version": "0.0.1",
+  "engines": {
+    "vscode": "^1.74.0"
+  },
+  "categories": [
+    "Programming Languages"
+  ],
+  "keywords": [
+    "type theory",
+    "mathematics",
+    "logic",
+    "formalization",
+    "proof editor"
+  ],
+  "preview": true,
+  "license": "SEE LICENSE IN LICENSE.md",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UniFormal/VSCode-MMT.git"
+  },
+  "bugs": {
+    "url": "https://github.com/UniFormal/VSCode-MMT/issues"
+  },
+  "publisher": "UniFormal, kwarc research group",
+  "icon": "img/logo_better_128x128.png",
+  "activationEvents": [
+    "onLanguage:mmt"
+  ],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "mmt.typecheck",
+        "title": "Typecheck MMT",
+        "enablement": "editorLangId == mmt && mmt.loaded"
+      },
+      {
+        "command": "mmt.buildmmtomdoc",
+        "title": "Build mmt-omdoc",
+        "enablement": "editorLangId == mmt && mmt.loaded"
+      },
+      {
+        "command": "mmt.reload",
+        "title": "Reload MMT Client"
+      }
+    ],
+    "languages": [
+      {
+        "id": "mmt",
+        "extensions": [
+          ".mmt",
+          ".mmtx"
+        ],
+        "configuration": "./mmt-language.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "mmt",
+        "scopeName": "source.mmt",
+        "path": "./syntaxes/mmt.tmLanguage.json"
+      }
+    ],
+    "configuration": [
+      {
+        "title": "MMT",
+        "properties": {
+          "mmt.serverProperties": {
+            "type": "string",
+            "default": "",
+            "markdownDescription": "Dunno yet"
+          },
+          "mmt.java.home": {
+            "type": "string",
+            "default": "C:\\Program Files\\OpenJDK\\jdk-19.0.2",
+            "markdownDescription": "Path to your Java installation, i.e., the directory containing the \"bin\" directory."
+          },
+          "mmt.usesbt": {
+            "type": "boolean",
+            "default": true,
+            "markdownDescription": "True if MMT should be started via SBT with mmtrepo, false if via mmtjar"
+          },
+          "mmt.mmtrepo": {
+            "type": "string",
+            "markdownDescription": "Path to MMT working directory, only needed when run mode is SBT"
+          },
+          "mmt.mmtjar": {
+            "type": "string",
+            "default": "",
+            "markdownDescription": "Path to your [mmt.jar](https://github.com/UniFormal/MMT/releases)"
+          },
+          "mmt.checkTimeout": {
+            "type": "number",
+            "default": 1000,
+            "markdownDescription": "Timeout in milliseconds after which a changed MMT document should be checked. -1 for deactivating this feature."
+          },
+          "mmt.saveBuildTimeout": {
+            "type": "number",
+            "default": -1,
+            "markdownDescription": "Timeout in milliseconds after which a changed MMT document should be auto-saved & built. -1 for deactivating this feature."
+          }
+        }
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "pretest": "npm run compile && npm run lint",
+    "lint": "eslint src --ext ts",
+    "test": "node ./out/test/runTest.js"
+  },
+  "devDependencies": {
+    "@types/debounce": "^1.2.1",
+    "@types/glob": "^8.0.0",
+    "@types/mocha": "^10.0.1",
+    "@types/node": "16.x",
+    "@types/shell-quote": "^1.7.1",
+    "@types/vscode": "^1.74.0",
+    "@typescript-eslint/eslint-plugin": "^5.45.0",
+    "@typescript-eslint/parser": "^5.45.0",
+    "@vscode/test-electron": "^2.2.0",
+    "eslint": "^8.28.0",
+    "glob": "^8.0.3",
+    "mocha": "^10.1.0",
+    "typescript": "^4.9.3"
+  },
+  "dependencies": {
+    "debounce": "^1.2.1",
+    "locate-java-home": "^1.1.2",
+    "shell-quote": "^1.8.0",
+    "vscode-languageclient": "^8.0.2"
+  }
+}

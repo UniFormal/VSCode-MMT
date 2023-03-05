@@ -1,0 +1,549 @@
+{
+    "scopeName" : "source.mmt",
+    "fileTypes" : ["mmt", "mmtx"],
+    "repository" : {
+        "whitespace" : {"match" : "[ \\t\\r\\n]+"},
+        "uri" : {"match" : "[\\w\\d:\\/\\?\\.]+", "name" : "mmt.uri"},
+        "parametricuri" : {
+            "name" : "mmt.uri",
+            "begin" : "[\\w\\d:\\/\\?\\.]+[ \\t\\r\\n]+",
+            "end" : "(?=[❘❙=])",
+            "beginCaptures" : {
+                "0" : {"name": "mmt.uri"}
+            },
+            "patterns": [
+                {"include" : "#term"}
+            ]
+        },
+        "mmtname" : {"match" : "[^ \\t\\r\\n❙❚❘:=]+", "name" : "mmt.name"},
+        "namespace": {
+            "name" : "meta.package.mmt",
+            "match" : "(namespace)[ \\t\\r\\n]+([\\w\\d:\\/\\?\\.]+)[ \\t\\r\\n]+*(❚)",
+            "captures" : {
+                "1": {"name": "keyword.other.package.mmt"},
+                "2": {"name": "storage.modifier.package.mmt"},
+                "3": {"name": "punctuation.definition.mmt.md"}
+            }
+        },
+        "fixmeta": {
+            "name" : "meta.preprocessor.mmt.fixmeta",
+            "match" : "(fixmeta)[ \\t\\r\\n]+([\\w\\d:\\/\\?\\.]+)[ \\t\\r\\n]+*(❚)",
+            "captures" : {
+                "1": {"name": "keyword.other.mmt.fixmeta"},
+                "2": {"name": "storage.modifier.class"},
+                "3": {"name": "punctuation.definition.mmt.md"}
+            }
+        },
+        "import": {
+            "name" : "meta.import.mmt",
+            "match" : "(import)[ \\t\\r\\n]+([^ \\t\\r\\n❙❚❘:=]+)[ \\t\\r\\n]+([\\w\\d:\\/\\?\\.]+)[ \\t\\r\\n]+*(❚)",
+            "captures" : {
+                "1": {"name": "keyword.other.import.mmt"},
+                "2" : {"name":"storage.modifier.import.mmt"},
+                "3": {"name": "storage.modifier.import.mmt"},
+                "4": {"name": "punctuation.definition.mmt.md"}
+            }
+        },
+        "modulecomment" : {
+            "name": "comment.block.mmt.module",
+            "begin" : "\\/\\/",
+            "end" : "❚",
+            "beginCaptures" : {
+                "0": {"name": "punctuation.definition.comment.mmt"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.md"}
+            },
+            "patterns" : [
+                {"include" : "#whitespace"},
+                {
+                    "name" : "comment.block.mmt",
+                    "match" : "."
+                }
+            ]
+        },
+        "declcomment" : {
+            "name": "comment.block.mmt.declaration",
+            "begin" : "\\/\\/",
+            "end" : "❙|(?=❚)",
+            "beginCaptures" : {
+                "0": {"name": "punctuation.definition.comment.mmt"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.dd"}
+            },
+            "patterns" : [
+                {"include" : "#whitespace"},
+                {
+                    "name" : "comment.block.mmt",
+                    "match" : "."
+                }
+            ]
+        },
+        "modulesemcomment" : {
+            "name": "comment.block.documentation.mmt.module",
+            "begin" : "\\/T",
+            "end" : "❚",
+            "beginCaptures" : {
+                "0": {"name": "punctuation.definition.comment.mmt"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.md"}
+            },
+            "patterns" : [
+                {"include" : "#whitespace"},
+                {
+                    "name" : "comment.block.documentation.mmt.module",
+                    "match" : "."
+                }
+            ]
+        },
+        "declsemcomment" : {
+            "name": "comment.block.documentation.mmt.declaration",
+            "begin" : "\\/T",
+            "end" : "❙|(?=❚)",
+            "beginCaptures" : {
+                "0": {"name": "punctuation.definition.comment.mmt"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.dd"}
+            },
+            "patterns" : [
+                {"include" : "#whitespace"},
+                {
+                    "name" : "comment.block.documentation.mmt.declaration",
+                    "match" : "."
+                }
+            ]
+        },
+        "objcomment" : {
+            "name": "comment.block.documentation.mmt.object",
+            "begin" : "\\/\\/",
+            "end" : "❘|(?=❙)|(?=❚)",
+            "beginCaptures" : {
+                "0": {"name": "punctuation.definition.comment.mmt"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.dd"}
+            },
+            "patterns" : [
+                {"include" : "#whitespace"},
+                {
+                    "name" : "comment.block.documentation.mmt.object",
+                    "match" : "."
+                }
+            ]
+        },
+        "mmtinclude" : {
+            "name" : "mmt.include",
+            "begin" : "include[ \\t\\r\\n]+",
+            "end" : "[ \\t\\r\\n]*(❙|(?=❚))",
+            "beginCaptures" : {
+                "0": {"name": "mmt.keyword"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.dd"}
+            },
+            "patterns" : [
+                {"include" : "#parametricuri"}
+            ]
+        },
+        "structure" : {
+            "name" : "mmt.structure",
+            "begin" : "structure[ \\t\\r\\n]+",
+            "end" : "[ \\t\\r\\n]*(❙|❚)",
+            "beginCaptures" : {
+                "0": {"name": "mmt.keyword"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.dd"}
+            },
+            "patterns" : [
+                {
+                    "name" : "mmt.structurename",
+                    "begin" : "[^ \\t\\r\\n❙❚❘:=]+[ \\t\\r\\n]+",
+                    "beginCaptures" : {
+                        "0": {"name": "mmt.name"}
+                    },
+                    "end": "[ \\t\\r\\n]*(?=[❙❘❚])",
+                    "patterns" : [
+                        {
+                            "name" : "mmt.structuredef",
+                            "begin" : "=[ \\t\\r\\n]*",
+                            "end" : "(?=[❚❙])",
+                            "beginCaptures" : {
+                                "0": {"name": "mmt.keyword"}
+                            },
+                            "patterns" : [
+                                {"include" : "#parametricuri"}
+                            ]
+                        },
+                        {
+                            "name" : "mmt.domain",
+                            "begin" : ":[ \\t\\r\\n]*",
+                            "end" : "(?=❚)",
+                            "beginCaptures" : {
+                                "0": {"name": "mmt.keyword"}
+                            },
+                            "patterns" : [
+                                {"include" : "#parametricuri"},
+                                {
+                                    "name" : "mmt.structurebody",
+                                    "begin" : "=",
+                                    "end" : "(?=❚)",
+                                    "beginCaptures" : {
+                                        "0": {"name": "mmt.keyword"}
+                                    },
+                                    "patterns" : [
+                                        {"include" : "#theorybody"}
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "feature" : {
+            "name" : "mmt.deriveddeclaration",
+            "begin" : "[^ \\t\\r\\n❙❚❘:=]+[ \\t\\r\\n]+(?=[^ \\t\\r\\n❙❚❘:=\\@#])",
+            "end" : "[ \\t\\r\\n]*[❚❙]",
+            "beginCaptures" : {
+                "0": {"name": "mmt.feature"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.dd"}
+            },
+            "patterns" : [
+                {
+                    "name" : "mmt.derivedbody",
+                    "begin" : "[ \\t\\r\\n]*=",
+                    "end" : "(?=❚)",
+                    "beginCaptures" : {
+                        "0": {"name": "mmt.keyword"}
+                    },
+                    "patterns" : [
+                        {"include" : "#theorybody"}
+                    ]
+                },
+                {
+                    "name" : "mmt.term",
+                    "begin" : ".",
+                    "end" : "(❘[ \\t\\r\\n]*(?==))|(?=❙)",
+                    "endCaptures" : {
+                        "0" : {"name": "punctuation.definition.mmt.od"}
+                    },
+                    "patterns" : [
+                        {"include" : "#term"}
+                    ]
+                }
+            ]
+        },
+        "explicitconstant" : {
+            "name" : "meta.definition.variable.constant.mmt",
+            "begin" : "constant[ \\t\\r\\n]*",
+            "end" : "[ \\t\\r\\n]*❙",
+            "beginCaptures" : {
+                "0": {"name": "storage.type.mmt.constant"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.dd"}
+            },
+            "patterns" : [
+                {
+                    "name": "mmt.constantname",
+                    "begin": "[^ \\t\\r\\n❙❚❘:=]+[ \\t\\r\\n]*",
+                    "end" : "[ \\t\\r\\n]*(?=❙)",
+                    "beginCaptures" : {
+                        "0": {"name": "variable.other.constant.mmt"}
+                    },
+                    "patterns" : [
+                        {"include": "#constantbody"}
+                    ]
+                }
+            ]
+        },
+        "constant" : {
+            "name": "meta.definition.variable.constant.mmt",
+            "begin": "[^ \\t\\r\\n❙❚❘:=]+[ \\t\\r\\n]*",
+            "end" : "[ \\t\\r\\n]*❙",
+            "beginCaptures" : {
+                "0": {"name": "variable.other.constant.mmt"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.dd"}
+            },
+            "patterns" : [
+                {"include": "#constantbody"}
+            ]
+        },
+        "constantbody" : {
+                "patterns" : [
+                    {"include":"#whitespace"},
+                    {"include":"#objcomment"},
+                    {
+                        "name": "mmt.type",
+                        "begin": ":[ \\t\\r\\n]*",
+                        "end" : "❘|(?=❙)",
+                        "beginCaptures" : {
+                            "0" : {"name":"mmt.keyword"}
+                        },
+                        "endCaptures" : {
+                            "0" : {"name":"punctuation.definition.mmt.od"}
+                        },
+                        "patterns" : [
+                            {"include": "#term"}
+                        ]
+                    },
+                    {
+                        "name": "mmt.definiens",
+                        "begin": "=[ \\t\\r\\n]*",
+                        "end" : "❘|(?=❙)",
+                        "beginCaptures" : {
+                            "0" : {"name":"punctuation.definition.mmt.definiens"}
+                        },
+                        "endCaptures" : {
+                            "0" : {"name":"punctuation.definition.mmt.od"}
+                        },
+                        "patterns" : [
+                            {"include": "#term"}
+                        ]
+                    },
+                    {
+                        "name": "mmt.alias",
+                        "begin": "\\@[ \\t\\r\\n]*",
+                        "end" : "❘|(?=❙)",
+                        "beginCaptures" : {
+                            "0" : {"name":"punctuation.definition.mmt.alias"}
+                        },
+                        "endCaptures" : {
+                            "0" : {"name":"punctuation.definition.mmt.od"}
+                        },
+                        "patterns" : [
+                            {
+                                "name":"mmt.name",
+                                "match": "[^ \\t\\r\\n❙❚❘:=]+"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "mmt.presentationnotation",
+                        "begin": "##[ \\t\\r\\n]*",
+                        "end" : "❘|(?=❙)",
+                        "beginCaptures" : {
+                            "0" : {"name":"punctuation.definition.mmt.keyword"}
+                        },
+                        "endCaptures" : {
+                            "0" : {"name":"punctuation.definition.mmt.od"}
+                        },
+                        "patterns" : [
+                            {
+                                "name": "mmt.notation",
+                                "match": "[^❘❙❚]"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "meta.declaration.annotation.mmt.notation",
+                        "begin": "#[ \\t\\r\\n]*",
+                        "end" : "❘|(?=❙)",
+                        "beginCaptures" : {
+                            "0" : {"name":"punctuation.definition.mmt.notation"}
+                        },
+                        "endCaptures" : {
+                            "0" : {"name":"punctuation.definition.mmt.od"}
+                        },
+                        "patterns" : [
+                            {
+                                "name": "string.interpolated.mmt.notation",
+                                "match": "[^❘❙❚]"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "meta.declaration.annotation.mmt.role",
+                        "begin": "role[ \\t\\r\\n]*",
+                        "end" : "❘|(?=❙)",
+                        "beginCaptures" : {
+                            "0" : {"name":"keyword.other.mmt.role"}
+                        },
+                        "endCaptures" : {
+                            "0" : {"name":"punctuation.definition.mmt.od"}
+                        },
+                        "patterns" : [
+                            {
+                                "name":"string.other.mmt.rolename",
+                                "match": "[^ \\t\\r\\n❙❚❘:=]+"
+                            }
+                        ]
+                    }
+                ]
+        },
+        "term" : {
+            "name" : "mmt.term",
+            "patterns" : [
+                {
+                    "name": "mmt.uri",
+                    "match": "☞[\\w\\d:\\/\\?\\.]+"
+                },
+                {
+                    "name" : "mmt.term",
+                    "match" : "[^❘❙❚]"
+                }
+            ]
+        },
+        "view" : {
+            "name" : "meta.class.mmt.view",
+            "begin" : "view[ \\t\\r\\n]+",
+            "end" : "[ \\t\\r\\n]*❚",
+            "beginCaptures" : {
+                "0": {"name": "storage.modifier.mmt"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.md"}
+            },
+            "patterns" : [
+                {
+                    "name" : "meta.class.identifier.mmt.viewname",
+                    "begin" : "[^ \\t\\r\\n❙❚❘:=]+[ \\t\\r\\n]*",
+                    "beginCaptures" : {
+                        "0" : {"name":"entity.name.type.class.mmt"}
+                    },
+                    "end" : "(?=[ \\t\\r\\n]*❚)",
+                    "patterns" : [
+                        {
+                            "name" : "meta.definition.class.inherited",
+                            "begin" : ":[ \\t\\r\\n]*",
+                            "beginCaptures" : {
+                                "0": {"name": "punctuation.definition"}
+                            },
+                            "end" : "(?=[ \\t\\r\\n]*❚)",
+                            "patterns" : [
+                                {
+                                    "name" : "meta.definition.class.inherited",
+                                    "begin" : "[\\w\\d:\\/\\?\\.]+[ \\t\\r\\n]*",
+                                    "beginCaptures" : {
+                                        "0": {"name": "mmt.uri"}
+                                    },
+                                    "end" : "(?=[ \\t\\r\\n]*❚)",
+                                    "patterns" : [
+                                        {
+                                            "name" : "mmt.codomain",
+                                            "begin" : "((->)|→)[ \\t\\r\\n]*",
+                                            "beginCaptures" : {
+                                                "0": {"name": "punctuation.definition.mmt.viewarrow"}
+                                            },
+                                            "end" : "(?=[ \\t\\r\\n]*❚)",
+                                            "patterns" : [
+                                                {
+                                                    "name" : "mmt.codomain",
+                                                    "begin" : "[\\w\\d:\\/\\?\\.]+[ \\t\\r\\n]*",
+                                                    "beginCaptures" : {
+                                                        "0": {"name": "mmt.uri"}
+                                                    },
+                                                    "end" : "(?=[ \\t\\r\\n]*❚)",
+                                                    "patterns" : [
+                                                        {
+                                                            "name" : "meta.class.body.mmt.view",
+                                                            "begin" : "=",
+                                                            "end" : "(?=❚)",
+                                                            "beginCaptures" : {
+                                                                "0": {"name": "punctuation.definition"}
+                                                            },
+                                                            "patterns" : [
+                                                                {"include" : "#theorybody"}
+                                                            ]
+                                                        }
+                                                    ]
+                                                }
+                                            ]
+                                        }
+                                    ]
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "theory" : {
+            "name" : "meta.class.mmt.theory",
+            "begin" : "theory[ \\t\\r\\n]+",
+            "end" : "[ \\t\\r\\n]*❚",
+            "beginCaptures" : {
+                "0": {"name": "storage.modifier.mmt.theory"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.md"}
+            },
+            "patterns" : [
+                { 
+                    "name" : "meta.class.identifier.mmt",
+                    "begin" : "[^ \\t\\r\\n❙❚❘:=]+[ \\t\\r\\n]*",
+                    "beginCaptures" : {
+                        "0" : {"name": "entity.name.type.class.mmt"}
+                    },
+                    "end" : "(?=[ \\t\\r\\n]*❚)",
+                    "patterns" : [
+                        {
+                            "name" : "mmt.metatheory",
+                            "begin" : ":[ \\t\\r\\n]*",
+                            "beginCaptures" : {
+                                "0": {"name": "mmt.keyword"}
+                            },
+                            "patterns" : [{"include" : "#uri"}],
+                            "end" : "(?=[^\\w\\d:\\/\\?\\.])"
+                        },
+                        {
+                            "name" : "mmt.theoryparameters",
+                            "begin" : ">[ \\t\\r\\n]*",
+                            "beginCaptures" : {
+                                "0": {"name": "mmt.keyword"}
+                            },
+                            "end" : "❘[ \\t\\r\\n]*",
+                            "endCaptures" : {
+                                "0": {"name": "punctuation.definition.mmt.od"}
+                            },
+                            "patterns" : [{"include" : "#term"}]
+                        },
+                        {
+                            "name" : "meta.class.body.mmt.theory",
+                            "begin" : "=",
+                            "end" : "(?=❚)",
+                            "beginCaptures" : {
+                                "0": {"name": "punctuation.definition.mmt"}
+                            },
+                            "patterns" : [
+                                {"include" : "#theorybody"}
+                            ]
+                        }
+                    ]
+                }
+            ]
+        },
+        "theorybody" : {
+            "patterns" : [
+                {"include" : "#whitespace"},
+                {"include" : "#mmtinclude"},
+                {"include" : "#theory"},
+                {"include" : "#view"},
+                {"include" : "#structure"},
+                {"include" : "#declcomment"},
+                {"include" : "#declsemcomment"},
+                {"include" : "#feature"},
+                {"include" : "#explicitconstant"},
+                {"include" : "#constant"}
+            ]
+        }
+    },
+    "patterns" : [
+        {"include" : "#whitespace"},
+        {"include" : "#namespace"},
+        {"include" : "#import"},
+        {"include" : "#theory"},
+        {"include" : "#view"},
+        {"include" : "#fixmeta"},
+        {"include" : "#modulesemcomment"},
+        {"include" : "#modulecomment"}
+   ]
+}
