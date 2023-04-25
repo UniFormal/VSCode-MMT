@@ -23,7 +23,14 @@ export function activate(context: vscode.ExtensionContext) {
 	context.subscriptions.push(vscode.commands.registerCommand("mmt.buildmmtomdoc", () => {
 		const doc = vscode.window.activeTextEditor?.document;
 		if (doc) {
-			client?.buildMMTOmdoc(doc);
+			doc.save().then(hasSaved => {
+				if (!hasSaved) {
+					vscode.window.showErrorMessage(
+						`Could not save ${doc.fileName} before building to mmt-omdoc. Build results may be outdated.`
+					);
+				}
+				client?.buildMMTOmdoc(doc);
+			});
 		}
 	}));
 	context.subscriptions.push(vscode.commands.registerCommand("mmt.reload", () => {

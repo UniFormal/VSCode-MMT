@@ -70,26 +70,31 @@
           "mmt.serverProperties": {
             "type": "string",
             "default": "",
-            "markdownDescription": "Dunno yet"
+            "markdownDescription": "todo"
           },
           "mmt.java.home": {
             "type": "string",
             "default": "C:\\Program Files\\OpenJDK\\jdk-19.0.2",
             "markdownDescription": "Path to your Java installation, i.e., the directory containing the \"bin\" directory."
           },
-          "mmt.usesbt": {
-            "type": "boolean",
-            "default": true,
-            "markdownDescription": "True if MMT should be started via SBT with mmtrepo, false if via mmtjar"
+          "mmt.runmode": {
+            "type": "string",
+            "enum": ["jar", "socket", "sbt"],
+            "default": "jar",
+            "enumDescriptions": [
+              "Uses an mmt.jar at the location specified by the option \"mmtjar\"",
+              "Expects a running instance of the MMT LSP server and an open socket (usually only used by the plugin developers themselves)",
+              "todo"
+            ]
           },
           "mmt.mmtrepo": {
             "type": "string",
-            "markdownDescription": "Path to MMT working directory, only needed when run mode is SBT"
+            "markdownDescription": "In case `mmt.runmode` is set to `sbt`, specify the path to your MMT repository here (more precisely: the parent directory of `src`)."
           },
           "mmt.mmtjar": {
             "type": "string",
             "default": "",
-            "markdownDescription": "Path to your [mmt.jar](https://github.com/UniFormal/MMT/releases)"
+            "markdownDescription": "In case `mmt.runmode` is set to `jar`, specify the path to your [mmt.jar](https://github.com/UniFormal/MMT/releases) here."
           },
           "mmt.checkTimeout": {
             "type": "number",
