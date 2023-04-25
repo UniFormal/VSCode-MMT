@@ -2,7 +2,7 @@
   "name": "mmt",
   "displayName": "MMT Language",
   "description": "Language and build support for the MMT language developed by the https://kwarc.info research group.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.74.0"
   },
@@ -25,7 +25,7 @@
   "bugs": {
     "url": "https://github.com/UniFormal/VSCode-MMT/issues"
   },
-  "publisher": "UniFormal, kwarc research group",
+  "publisher": "kwarc",
   "icon": "img/logo_better_128x128.png",
   "activationEvents": [],
   "main": "./out/extension.js",
