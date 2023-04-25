@@ -106,17 +106,16 @@ class ServerOptions {
 			.filter(e => e.length > 0);
 	
 		const javaOptions = getJavaOptions(outputChannel);
-	
-		const baseProperties = [
+		const launchArgs: string[] = [
 			"-Xmx8192m",
 			"-classpath",
 			mmtJarPath,
+			...javaOptions,
 			ServerOptions.mainJavaClass,
-			ServerOptions.socketPort,
+			ServerOptions.socketPort.toString(),
 			projectHome // todo: necessary?
 		];
-		const launchArgs = baseProperties.concat(javaOptions);
-	
+
 		outputChannel.appendLine("Initializing MMT LSP Server");
 		// todo: the debug message below naively concatenates arguments via space, might differ from how the OS
 		// is actually instructed to invoke the command because in launchArgs the arguments are provided separately
