@@ -15,9 +15,11 @@ Syntax highlighting, code completion, typechecking, building, lenses.
    2. Open Visual Studio Code and press Ctrl+Shift+P (alternatively: `View -> Command Pallette...`)
    3. In the Command Pallette type `VSIX` and select `>Extensions: Install from VSIX...`.
    4. Select the `*.vsix` extension file you downloaded in step 3.1.
-4. Configure the MMT Extension by pressing Ctrl+Shift+P and searching for `Settings` and selecting `Preferences: Open Settings (UI)`.
-5. In the settings, search for `mmt`.
-6. Select `jar` as the run mode and set the `*.jar` path to point to the file you downloaded in step 1.
+4. Configure the MMT Extension:
+   1. Press Ctrl+Shift+P, search for `Settings`, and select `Preferences: Open Settings (UI)`.
+   2. In the settings, search for `mmt`.
+   3. Select `jar` as the *run mode* and make *mmtjar* point to the `*.jar` file you downloaded in step 1.
+   4. Set *Java home* to your Java installation.
 
 ## Usage
 
