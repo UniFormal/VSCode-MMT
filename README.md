@@ -9,9 +9,9 @@ Syntax highlighting, code completion, typechecking, building, lenses.
 ## Installation
 
 1. Get ahold of an `mmt.jar`, most likely by downloading one of the pre-built releases.
-2. Install Visual Studio Code by following their instructions
+2. Install [Visual Studio Code by following their instructions](https://code.visualstudio.com/)
 3. Install this MMT Extension for Visual Studio Code:
-   1. Download the pre-built `*.vsix` extension file
+   1. Download the [latest pre-built `*.vsix` extension file](https://github.com/UniFormal/VSCode-MMT/releases/latest).
    2. Open Visual Studio Code and press Ctrl+Shift+P (alternatively: `View -> Command Pallette...`)
    3. In the Command Pallette type `VSIX` and select `>Extensions: Install from VSIX...`.
    4. Select the `*.vsix` extension file you downloaded in step 3.1.
