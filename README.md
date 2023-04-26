@@ -2,24 +2,20 @@
 
 ## Features
 
-Syntax highlighting, code completion, typechecking, building, lenses.
+Syntax highlighting, typechecking, and building for the [MMT language](https://uniformal.github.io/).
+
+<!-- code completion, typechecking, building, lenses. -->
 
 <!-- screenshot or animation -->
 
-## Installation
+## Initial Configuration
 
-1. Get ahold of an `mmt.jar`, most likely by downloading one of the pre-built releases.
-2. Install [Visual Studio Code by following their instructions](https://code.visualstudio.com/)
-3. Install this MMT Extension for Visual Studio Code:
-   1. Download the [latest pre-built `*.vsix` extension file](https://github.com/UniFormal/VSCode-MMT/releases/latest).
-   2. Open Visual Studio Code and press Ctrl+Shift+P (alternatively: `View -> Command Pallette...`)
-   3. In the Command Pallette type `VSIX` and select `>Extensions: Install from VSIX...`.
-   4. Select the `*.vsix` extension file you downloaded in step 3.1.
-4. Configure the MMT Extension:
-   1. Press Ctrl+Shift+P, search for `Settings`, and select `Preferences: Open Settings (UI)`.
-   2. In the settings, search for `mmt`.
-   3. Select `jar` as the *run mode* and make *mmtjar* point to the `*.jar` file you downloaded in step 1.
-   4. Set *Java home* to your Java installation.
+1. Get ahold of a suitable `mmt.jar`. At this point, you most likely want a nightly build of MMT provided to you by one of its developers.
+2. Press Ctrl+Shift+P, search for `Settings`, and select `Preferences: Open Settings (UI)`.
+3. In the settings search for `mmt` and configure
+   - as *run mode* select `jar`
+   - as *mmtjar* enter the path to the `mmt.jar` file you downloaded in step 1
+   - as *Java home* set the path to your Java installation
 
 ## Usage
 
@@ -47,9 +43,19 @@ This extension contributes the following settings:
 
 Currently no code completion or lenses.
 
+## Sideloading
+
+1. Download the [nightly build of this extension packaged as a `*.vsix` extension file](https://github.com/UniFormal/VSCode-MMT/releases/latest).
+2. Open Visual Studio Code and press Ctrl+Shift+P (alternatively: `View -> Command Pallette...`)
+3. In the Command Pallette type `VSIX` and select `>Extensions: Install from VSIX...`.
+4. Select the `*.vsix` extension file you downloaded in step 1.
+
 ## Release Notes
 
-### 0.0.1
+## 0.1.2
 
-Added syntax highlighting, typechecking, and building.
+Minor updates of this README.
 
+## 0.1.1
+
+First version published to the Visual Studio Code marketplace.
