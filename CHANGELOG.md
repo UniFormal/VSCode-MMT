@@ -6,6 +6,10 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+### Added
+
+- Preliminary *Go To Definition* functionality (ctrl + hover over constant references)
+
 ## [0.1.2] -- 2023-04-26
 
 ### Fixed
