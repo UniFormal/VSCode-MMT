@@ -49,10 +49,18 @@ export async function launchMMT(context: vscode.ExtensionContext, projectHome: s
 	const serverOptions = await ServerOptions.loadFromConfiguration(projectHome);
 	const languageClient = new MMTLanguageClient(serverOptions, clientOptions);
 
-	languageClient.start();
-	outputChannel.appendLine("Done starting client.");
-
-	return languageClient;
+	return new Promise<MMTLanguageClient>((resolve, reject) => {
+		let startedAlready = false;
+		setTimeout(() => {
+			if (!startedAlready) {
+				reject("Starting of MMT Server timed out");
+			}
+		}, 3000);
+		languageClient.start().then(() => {
+			startedAlready = true;
+			resolve(languageClient);
+		}).catch(reject);
+	});
 }
 
 class ServerOptions {

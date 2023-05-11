@@ -88,41 +88,55 @@ export function activate(context: vscode.ExtensionContext) {
 	loadMMTClient(context);
 }
 
-function loadMMTClient(context: vscode.ExtensionContext) {
+function loadMMTClient(context: vscode.ExtensionContext): void {
 	if (client !== null) {
 		vscode.window.showErrorMessage("Internal error of MMT extension: " +
 			"we were instructed to reload the client despite client !== null yet.");
 		return;
 	}
-	vscode.window.showInformationMessage("MMT client loading...");
 
-	if (vscode.workspace.workspaceFolders) {
+	vscode.window.withProgress({
+		title: "Loading MMT",
+		location: vscode.ProgressLocation.Window,
+		cancellable: false
+	}, async (progress, _) => {
+		progress.report({message: "Starting MMT Server"});
+
+		if (!vscode.workspace.workspaceFolders) {
+			progress.report({message: "MMT could not load"});
+			vscode.window.showErrorMessage("MMT will not start because you've opened a single file and not a project directory.");
+			return Promise.reject(null);
+		}
+
+		progress.report({message: "Starting MMT Server"});
+
 		const projectHome = vscode.workspace.workspaceFolders[0].uri.fsPath;
-		launchMMT(context, projectHome).then(newClient => {
+		return launchMMT(context, projectHome).then(newClient => {
 			newClient.onDidChangeState(event => {
 				switch (event.newState) {
 					case language.State.Running:
 						vscode.commands.executeCommand('setContext', 'mmt.loaded', true);
-						vscode.window.showInformationMessage("MMT client loaded.");
+						progress.report({message: "MMT Server started"});
 						break;
-
+	
 					case language.State.Stopped:
 						vscode.commands.executeCommand('setContext', 'mmt.loaded', false);
-						vscode.window.showInformationMessage("Try reloading the MMT client.", "reload").then(choice => {
-							if (choice === "reload") {
-								vscode.commands.executeCommand("mmt.reload");
-							}
-						});
 						break;
 				}
 				client = newClient;
 			});
 			context.subscriptions.push(newClient);
-		})
-		.catch(console.error.bind(console));
-	} else {
-		outputChannel.appendLine("MMT will not start because you've opened a single file and not a project directory.");
-	}
+		}).catch(error => {
+			vscode.window.showErrorMessage("Error while starting MMT Server: " + error);
+			console.error(error);
+
+			vscode.window.showInformationMessage("Try reloading the MMT Server", "reload").then(choice => {
+				if (choice === "reload") {
+					vscode.commands.executeCommand("mmt.reload");
+				}
+			});
+		});
+	});
 }
 
 export function deactivate() {
