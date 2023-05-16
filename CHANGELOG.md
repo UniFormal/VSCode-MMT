@@ -8,7 +8,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Added
 
-- Preliminary *Go To Definition* functionality (ctrl + hover over constant references)
+- extension comes now bundled with a default `mmt.jar`
+- preliminary *Go To Definition* functionality (ctrl+hover over constant references and notations)
+- support of *Find All References*, i.e. usages,  functionality for MMT constants and modules (right-click on constant or module name and click *Find All References*)
+- typecheck & build actions accessible from explorer's context menu
+- icons for `.mmt` files
 
 ## [0.1.2] -- 2023-04-26
 

@@ -33,19 +33,43 @@
     "commands": [
       {
         "command": "mmt.typecheck",
-        "title": "Typecheck MMT",
-        "enablement": "editorLangId == mmt && mmt.loaded"
+        "title": "Typecheck mmt",
+        "enablement": "resourceLangId == mmt && mmt.loaded"
       },
       {
         "command": "mmt.buildmmtomdoc",
         "title": "Build mmt-omdoc",
-        "enablement": "editorLangId == mmt && mmt.loaded"
+        "enablement": "resourceLangId == mmt && mmt.loaded"
       },
       {
         "command": "mmt.reload",
         "title": "Reload MMT Client"
+      },
+      {
+        "command": "mmt.runmsl",
+        "title": "Run MSL file",
+        "enablement": "resourceExtname == .msl && mmt.loaded"
       }
     ],
+    "menus": {
+      "explorer/context": [
+        {
+          "command": "mmt.typecheck",
+          "group": "z_commands@1",
+          "when": "resourceExtname == .mmt && mmt.loaded"
+        },
+        {
+          "command": "mmt.buildmmtomdoc",
+          "group": "z_commands@2",
+          "when": "resourceExtname == .mmt && mmt.loaded"
+        },
+        {
+          "command": "mmt.runmsl",
+          "group": "2_workspace",
+          "when": "resourceExtname == .msl && mmt.loaded"
+        }
+      ]
+    },
     "languages": [
       {
         "id": "mmt",
@@ -53,6 +77,10 @@
           ".mmt",
           ".mmtx"
         ],
+        "icon": {
+          "light": "img/logo_better_128x128.png",
+          "dark": "img/logo_better_128x128.png"
+        },
         "configuration": "./mmt-language.json"
       }
     ],
@@ -67,51 +95,59 @@
       {
         "title": "MMT",
         "properties": {
-          "mmt.serverProperties": {
+          "mmt.invocation.mode": {
+            "title": "Mode",
             "type": "string",
-            "default": "",
-            "markdownDescription": "todo"
-          },
-          "mmt.java.home": {
-            "type": "string",
-            "default": "C:\\Program Files\\OpenJDK\\jdk-19.0.2",
-            "markdownDescription": "Path to your Java installation, i.e., the directory containing the \"bin\" directory."
-          },
-          "mmt.runmode": {
-            "type": "string",
-            "enum": ["jar", "socket", "sbt"],
+            "enum": [
+              "jar",
+              "socket"
+            ],
             "default": "jar",
+            "markdownDescription": "Controls how MMT is invoked.",
             "enumDescriptions": [
               "Uses an mmt.jar at the location specified by the option \"mmtjar\"",
-              "Expects a running instance of the MMT LSP server and an open socket (usually only used by the plugin developers themselves)",
-              "todo"
-            ]
+              "Expects a running instance of the MMT LSP server and an open socket (usually only used by the plugin developers themselves)"
+            ],
+            "order": 0
           },
-          "mmt.mmtrepo": {
-            "type": "string",
-            "markdownDescription": "In case `mmt.runmode` is set to `sbt`, specify the path to your MMT repository here (more precisely: the parent directory of `src`)."
-          },
-          "mmt.mmtjar": {
+          "mmt.invocation.javaHome": {
+            "title": "Java Home",
             "type": "string",
             "default": "",
-            "markdownDescription": "In case `mmt.runmode` is set to `jar`, specify the path to your [mmt.jar](https://github.com/UniFormal/MMT/releases) here."
+            "markdownDescription": "When `#mmt.execution.runmode#` is set to `jar`, provides the path to your Java Home (i.e., the directory such that underneath `bin/java` is an executable). Leave empty to use Java from your PATH environment variable.",
+            "order": 1
           },
-          "mmt.checkTimeout": {
+          "mmt.invocation.mmtJar": {
+            "title": "mmt.jar for jar Mode",
+            "type": "string",
+            "default": "",
+            "markdownDescription": "When `#mmt.execution.runmode#` is set to `jar`, holds the path to an MMT distribution in form of an [mmt.jar](https://github.com/UniFormal/MMT/releases) here. Leave empty to use mmt.jar bundled with this extension.",
+            "order": 2
+          },
+          "mmt.invocation.javaFlags": {
+            "title": "Java Flags for jar Mode",
+            "type": "string",
+            "default": "",
+            "markdownDescription": "When `#mmt.execution.runmode#` is set to `jar`, optionally specifies command-line flags passed to `java` invocation."
+          },
+          "mmt.ui.checkTimeout": {
+            "title": "Typechecking-on-Keypress Timeout",
             "type": "number",
             "default": 1000,
-            "markdownDescription": "Timeout in milliseconds after which a changed MMT document should be checked. -1 for deactivating this feature."
+            "markdownDescription": "Timeout in milliseconds after which a changed MMT document should be typechecked. -1 for deactivating this feature."
           },
-          "mmt.saveBuildTimeout": {
+          "mmt.ui.saveBuildTimeout": {
+            "title": "Build-on-Keypress Timeout",
             "type": "number",
             "default": -1,
-            "markdownDescription": "Timeout in milliseconds after which a changed MMT document should be auto-saved & built. -1 for deactivating this feature."
+            "markdownDescription": "Timeout in milliseconds after which a changed MMT document should be auto-saved & built to MMT/OMDoc. -1 for deactivating this feature."
           }
         }
       }
     ]
   },
   "scripts": {
-    "vscode:prepublish": "npm run compile",
+    "vscode:prepublish": "npx path-exists lib/mmt.jar && npm run compile || echo \"ERROR (from package.json): PROVIDE lib/mmt.jar BEFORE PACKAGING\"",
     "compile": "tsc -p ./",
     "watch": "tsc -watch -p ./",
     "pretest": "npm run compile && npm run lint",
@@ -131,11 +167,12 @@
     "eslint": "^8.28.0",
     "glob": "^8.0.3",
     "mocha": "^10.1.0",
+    "path-exists-cli": "^2.0.0",
     "typescript": "^4.9.3"
   },
   "dependencies": {
     "debounce": "^1.2.1",
-    "locate-java-home": "^1.1.2",
+    "find-java-home": "^2.0.0",
     "shell-quote": "^1.8.0",
     "vscode-languageclient": "^8.0.2"
   }

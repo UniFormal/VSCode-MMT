@@ -47,7 +47,7 @@ export function activate(context: vscode.ExtensionContext) {
 		loadMMTClient(context);
 	}));
 
-	const checkTimeout = vscode.workspace.getConfiguration("mmt").get<number>("checkTimeout") || -1;
+	const checkTimeout = vscode.workspace.getConfiguration("mmt").get<number>("ui.checkTimeout") || -1;
 	assert(checkTimeout === -1 || checkTimeout >= 0);
 
 	if (checkTimeout !== -1) {
@@ -64,7 +64,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}));
 	}
 
-	const saveBuildTimeout = vscode.workspace.getConfiguration("mmt").get<number>("saveBuildTimeout") || -1;
+	const saveBuildTimeout = vscode.workspace.getConfiguration("mmt").get<number>("ui.saveBuildTimeout") || -1;
 	assert(saveBuildTimeout === -1 || saveBuildTimeout >= 0);
 
 	if (saveBuildTimeout !== -1) {
@@ -126,6 +126,21 @@ function loadMMTClient(context: vscode.ExtensionContext): void {
 				client = newClient;
 			});
 			context.subscriptions.push(newClient);
+
+			// start client with timeout in mind
+			return new Promise<void>((resolve, reject) => {
+				let startedAlready = false;
+				setTimeout(() => {
+					if (!startedAlready) {
+						reject("Starting of MMT Server timed out");
+					}
+				}, 8000);
+
+				newClient.start().then(() => {
+					startedAlready = true;
+					resolve();
+				}).catch(reject);
+			});
 		}).catch(error => {
 			vscode.window.showErrorMessage("Error while starting MMT Server: " + error);
 			console.error(error);

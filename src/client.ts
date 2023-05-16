@@ -1,12 +1,11 @@
+import * as findJavaHome from 'find-java-home';
 import * as language from 'vscode-languageclient/node';
 import * as net from "net";
 import * as path from "path";
 import * as vscode from 'vscode';
 import { outputChannel } from './output-channel';
 
-import {getJavaHome} from "./util/getJavaHome";
 import {getJavaOptions} from "./util/getJavaOptions";
-import { Server } from 'http';
 
 const clientOptions: language.LanguageClientOptions = {
 	documentSelector: [{ scheme: "file", language: "mmt" }],
@@ -46,32 +45,21 @@ export class MMTLanguageClient extends language.LanguageClient {
 }
 
 export async function launchMMT(context: vscode.ExtensionContext, projectHome: string): Promise<MMTLanguageClient> {
-	const serverOptions = await ServerOptions.loadFromConfiguration(projectHome);
+	const serverOptions = await ServerOptions.loadFromConfiguration(context, projectHome);
 	const languageClient = new MMTLanguageClient(serverOptions, clientOptions);
 
-	return new Promise<MMTLanguageClient>((resolve, reject) => {
-		let startedAlready = false;
-		setTimeout(() => {
-			if (!startedAlready) {
-				reject("Starting of MMT Server timed out");
-			}
-		}, 3000);
-		languageClient.start().then(() => {
-			startedAlready = true;
-			resolve(languageClient);
-		}).catch(reject);
-	});
+	return languageClient;
 }
 
 class ServerOptions {
-	public static loadFromConfiguration(projectHome: string): Promise<language.ServerOptions> {
-		switch (vscode.workspace.getConfiguration("mmt").get<string>("runmode")) {
+	public static loadFromConfiguration(context: vscode.ExtensionContext, projectHome: string): Promise<language.ServerOptions> {
+		switch (vscode.workspace.getConfiguration("mmt").get<string>("invocation.mode")) {
 			case "jar":
-				return ServerOptions.forJAR(projectHome);
+				return ServerOptions.forJAR(context, projectHome);
 			case "socket":
 				return ServerOptions.forSocket();
-			case "sbt":
-				return ServerOptions.forSBT(projectHome);
+			/*case "sbt": experimental
+				return ServerOptions.forSBT(projectHome);*/
 	
 			default:
 				return Promise.reject("Invalid configuration for mmt.runmode. See settings of mmt extension.");
@@ -91,12 +79,35 @@ class ServerOptions {
 		});
 	}
 
-	public static async forJAR(projectHome: string): Promise<language.ServerOptions> {
+	public static async forJAR(context: vscode.ExtensionContext, projectHome: string): Promise<language.ServerOptions> {
 		const config = vscode.workspace.getConfiguration("mmt");
 	
-		const javaHome = await getJavaHome();
+		const javaHome: string = await (async () => {
+			const userJavaHome = vscode.workspace.getConfiguration("mmt").get<string>("invocation.javaHome");
+  			if (typeof userJavaHome === "undefined" || userJavaHome === "") {
+    			return new Promise((resolve, reject) =>
+					findJavaHome({allowJre: true}, (err, javaHome) => {
+						if (err) {
+							reject(err);
+						} else {
+							resolve(javaHome);
+						}
+					})
+				);
+			} else {
+				return userJavaHome;
+			}
+		})();
 		const javaPath = path.join(javaHome, "bin", "java");
-		const mmtJarPath = config.get<string>("mmtjar");
+		const mmtJarPath = (() => {
+			const optionMmtJar = config.get<string>("invocation.mmtJar");
+			if (optionMmtJar === "") {
+				return context.asAbsolutePath("lib/mmt.jar");
+			} else {
+				return optionMmtJar;
+			}
+		})();
+
 		if(!mmtJarPath) { 
 			const openSettingsAction = "Open settings";
 			vscode.window.showErrorMessage("Path to MMT jar not set", openSettingsAction)
@@ -109,7 +120,7 @@ class ServerOptions {
 		}
 	
 		const serverProperties: string[] = config
-			.get<string>("serverProperties")!
+			.get<string>("invocation.javaFlags")!
 			.split(" ")
 			.filter(e => e.length > 0);
 	
@@ -135,10 +146,10 @@ class ServerOptions {
 		});
 	}
 
-	/**
+	/*
 	 * @todo experimental!
 	 * @param projectHome must not contain double quotes
-	 */
+	 *
 	public static async forSBT(projectHome: string): Promise<language.ServerOptions> {
 		const mmtrepo = vscode.workspace.getConfiguration("mmt").get<string>("mmtrepo");
 		if (!mmtrepo) {
@@ -161,5 +172,5 @@ class ServerOptions {
 			run: executable,
 			debug: executable
 		});
-	}
+	}*/
 }
