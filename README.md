@@ -21,8 +21,7 @@ Syntax highlighting, typechecking, and building for the [MMT language](https://u
 
 In case of errors or bugs, a helpful command is `Reload MMT`.
 
-## Extension Settings
-<!--
+<!-- ## Extension Settings
 
 This extension contributes the following settings:
 
