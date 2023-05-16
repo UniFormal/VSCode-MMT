@@ -1,6 +1,6 @@
 import * as vscode from 'vscode';
 import * as language from 'vscode-languageclient/node';
-import * as debounce from "debounce";
+import debounce from "debounce";
 import { assert } from 'console';
 import { MMTLanguageClient, launchMMT } from './client';
 import { outputChannel } from './output-channel';

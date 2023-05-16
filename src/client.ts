@@ -1,4 +1,4 @@
-import * as findJavaHome from 'find-java-home';
+import findJavaHome from 'find-java-home';
 import * as language from 'vscode-languageclient/node';
 import * as net from "net";
 import * as path from "path";
