@@ -8,15 +8,6 @@ Syntax highlighting, typechecking, and building for the [MMT language](https://u
 
 <!-- screenshot or animation -->
 
-## Initial Configuration
-
-1. Get ahold of a suitable `mmt.jar`. At this point, you most likely want a nightly build of MMT provided to you by one of its developers.
-2. Press Ctrl+Shift+P, search for `Settings`, and select `Preferences: Open Settings (UI)`.
-3. In the settings search for `mmt` and configure
-   - as *run mode* select `jar`
-   - as *mmtjar* enter the path to the `mmt.jar` file you downloaded in step 1
-   - as *Java home* set the path to your Java installation
-
 ## Usage
 
 1. Create a directory for your MMT archives (e.g., called `archives`).
@@ -51,6 +42,11 @@ Currently no code completion or lenses.
 4. Select the `*.vsix` extension file you downloaded in step 1.
 
 ## Release Notes
+
+## 0.2.0
+
+- *Go To Definition* and *Find All References* support for MMT files
+- no initial configuration necessary anymore: the extension comes now bundled with an `mmt.jar` and automatically infers Java Home from `java` on `PATH`
 
 ## 0.1.2
 
