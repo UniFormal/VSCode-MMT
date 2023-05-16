@@ -14,25 +14,38 @@ let client: MMTLanguageClient|null = null;
 export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.executeCommand('setContext', 'mmt.loaded', false);
 
-	context.subscriptions.push(vscode.commands.registerCommand("mmt.typecheck", () => {
-		const doc = vscode.window.activeTextEditor?.document;
-		if (doc) {
-			client?.typecheck(doc);
-		}
+	context.subscriptions.push(vscode.commands.registerTextEditorCommand("mmt.typecheck", editor => {
+		client?.typecheck(editor.document);
 	}));
-	context.subscriptions.push(vscode.commands.registerCommand("mmt.buildmmtomdoc", () => {
-		const doc = vscode.window.activeTextEditor?.document;
-		if (doc) {
-			doc.save().then(hasSaved => {
-				if (!hasSaved) {
-					vscode.window.showErrorMessage(
-						`Could not save ${doc.fileName} before building to mmt-omdoc. Build results may be outdated.`
-					);
-				}
-				client?.buildMMTOmdoc(doc);
-			});
-		}
+	context.subscriptions.push(vscode.commands.registerTextEditorCommand("mmt.buildmmtomdoc", editor => {
+		const doc = editor.document;
+		doc.save().then(hasSaved => {
+			if (!hasSaved) {
+				vscode.window.showErrorMessage(
+					`Could not save ${doc.fileName} before building to mmt-omdoc. Build results may be outdated.`
+				);
+			}
+			client?.buildMMTOmdoc(doc);
+		});
 	}));
+
+	// invoked from explorer context menu
+	context.subscriptions.push(vscode.commands.registerCommand("mmt.typecheckFile", (uri: vscode.Uri) => {
+		vscode.workspace.openTextDocument(uri).then(doc => {
+			// todo: need to wait awkwardly for LSP server to receive didOpen event
+			//       and register the corresponding document in its internal state
+			setTimeout(() => client?.typecheck(doc), 750);
+		});
+	}));
+	// invoked from explorer context menu
+	context.subscriptions.push(vscode.commands.registerCommand("mmt.buildmmtomdocFile", (uri: vscode.Uri) => {
+		vscode.workspace.openTextDocument(uri).then(doc => {
+			// todo: need to wait awkwardly for LSP server to receive didOpen event
+			//       and register the corresponding document in its internal state
+			setTimeout(() => client?.buildMMTOmdoc(doc), 750);
+		});
+	}));	
+
 	context.subscriptions.push(vscode.commands.registerCommand("mmt.reload", () => {
 		vscode.commands.executeCommand('setContext', 'mmt.loaded', false);
 		client?.dispose();
@@ -85,6 +98,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}));
 	}
 
+	outputChannel.show();
 	loadMMTClient(context);
 }
 

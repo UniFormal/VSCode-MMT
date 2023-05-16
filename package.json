@@ -33,12 +33,22 @@
     "commands": [
       {
         "command": "mmt.typecheck",
-        "title": "Typecheck mmt",
+        "title": "Typecheck MMT",
+        "enablement": "resourceLangId == mmt && mmt.loaded"
+      },
+      {
+        "command": "mmt.typecheckFile",
+        "title": "Typecheck MMT",
         "enablement": "resourceLangId == mmt && mmt.loaded"
       },
       {
         "command": "mmt.buildmmtomdoc",
-        "title": "Build mmt-omdoc",
+        "title": "Build MMT/OMDoc",
+        "enablement": "resourceLangId == mmt && mmt.loaded"
+      },
+      {
+        "command": "mmt.buildmmtomdocFile",
+        "title": "Build MMT/OMDoc",
         "enablement": "resourceLangId == mmt && mmt.loaded"
       },
       {
@@ -54,12 +64,12 @@
     "menus": {
       "explorer/context": [
         {
-          "command": "mmt.typecheck",
+          "command": "mmt.typecheckFile",
           "group": "z_commands@1",
           "when": "resourceExtname == .mmt && mmt.loaded"
         },
         {
-          "command": "mmt.buildmmtomdoc",
+          "command": "mmt.buildmmtomdocFile",
           "group": "z_commands@2",
           "when": "resourceExtname == .mmt && mmt.loaded"
         },
@@ -67,6 +77,16 @@
           "command": "mmt.runmsl",
           "group": "2_workspace",
           "when": "resourceExtname == .msl && mmt.loaded"
+        }
+      ],
+      "commandPalette": [
+        {
+          "command": "mmt.typecheckFile",
+          "when": "resourceExtname == .nonexistinggggggggggggggg"
+        },
+        {
+          "command": "mmt.buildmmtomdocFile",
+          "when": "resourceExtname == .nonexistinggggggggggggggg"
         }
       ]
     },
