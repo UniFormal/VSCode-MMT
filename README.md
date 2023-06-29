@@ -42,6 +42,10 @@ Currently no code completion or lenses.
 
 ## Release Notes
 
+## Unreleased
+
+- *Go To Definition* functionality is now more fine-grained only applicable on notations of a term (and not ambigiously on notations of its subterms)
+
 ## 0.2.0
 
 - *Go To Definition* and *Find All References* support for MMT files

@@ -4,6 +4,16 @@ All notable changes to the "mmt" extension will be documented in this file.
 
 Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how to structure this file.
 
+## Unreleased
+
+### Added
+
+- *Go To Definition* functionality is now more fine-grained only applicable on notations of a term (and not ambigiously on notations of its subterms)
+
+### Fixed
+
+- more robust way of handling non-standard workspace/archive paths (e.g., with drive letters other than `C:` on Windows) and better error reporting
+
 ## [0.2.0] -- 2023-05-16
 
 ### Added
