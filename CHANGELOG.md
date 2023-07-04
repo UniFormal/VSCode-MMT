@@ -8,6 +8,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Added
 
+- Integrated MMT shell
 - *Go To Definition* functionality is now more fine-grained only applicable on notations of a term (and not ambigiously on notations of its subterms)
 
 ### Fixed

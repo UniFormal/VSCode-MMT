@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MMT Shell</title>
+    <style>
+        #txt {
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+    <button id="btnClear">Clear</button>
+    <textarea id="txt" rows="5" readonly></textarea>
+    <br>
+    <input type="text" id="txtQuery" />
+    <script>
+        /** @type {{ getState: function():any, setState: function(any):void, postMessage: function(any):void }} */
+        const vscode = acquireVsCodeApi();
+
+        // type taken from ../messages.ts
+        /** @type {{log: Array<{ind: string, caller: string, group: string, msgParts: string[]}>}} */
+        const oldState = vscode.getState() || { log: [] };
+        const state = oldState;
+        update();
+
+        window.addEventListener("message", event => {
+            console.log("MMT shell webview received message");
+            console.log(event.data);
+
+            const error = () => {
+                console.error("Unknown message passed to MMT Shell webview. Full event data was:");
+                console.error(event);
+            };
+            if (!event.data || typeof event.data.kind !== "string") {
+                error();
+            } else {
+                switch (event.data.kind) {
+                    case "log":
+                        log(event.data.msg);
+                        break;
+                    default:
+                        error();
+                }
+            }
+        });
+        document.getElementById("btnClear").addEventListener("click", clear.bind(null));
+
+        const txtQuery = document.getElementById("txtQuery");
+        txtQuery.addEventListener("keydown", event => {
+            if (event.keyCode === 13) { // enter key
+                vscode.postMessage({
+                    kind: "handleline",
+                    msg: txtQuery.value
+                });
+                txtQuery.value = "";
+            }
+        });
+
+        function clear() {
+            document.getElementById("txt").value = "";
+
+            state.log = [];
+            vscode.setState(state);
+        }
+
+        /**
+         * @param {{ind: string, caller: string, group: string, msgParts: string[]}} msg log message
+         */
+        function log(msg) {
+            logRaw([msg]);
+
+            state.log.push(msg);
+            vscode.setState(state);
+        }
+
+        /**
+         * @param {Array<{ind: string, caller: string, group: string, msgParts: string[]}>} messages
+         */
+        function logRaw(messages) {
+            let str = "";
+            for (const msg of messages) {
+                str += "\n" + msg.msgParts.join(" ");
+            }
+            document.getElementById("txt").value += str;
+        }
+
+        /**
+         * Update UI to reflect state encoded in variable `state` above.
+         */
+        function update() {
+            document.getElementById("txt").value = "";
+            logRaw(state.log);
+        }
+    </script>
+</body>
+
+</html>

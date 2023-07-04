@@ -27,7 +27,9 @@
   },
   "publisher": "kwarc",
   "icon": "img/logo_better_128x128.png",
-  "activationEvents": [],
+  "activationEvents": [
+    "onWebviewPanel:mmtshell"
+  ],
   "main": "./out/main.js",
   "contributes": {
     "commands": [
@@ -57,10 +59,28 @@
       },
       {
         "command": "mmt.runmsl",
-        "title": "Run MSL file",
+        "title": "Run MMT Scripting Language (*.msl) File",
         "enablement": "resourceExtname == .msl && mmt.loaded"
       }
     ],
+    "viewsContainers": {
+      "panel": [
+        {
+          "id": "mmtpanelcontainer",
+          "title": "MMT",
+          "icon": "img/logo_better_128x128.png"
+        }
+      ]
+    },
+    "views": {
+      "mmtpanelcontainer": [
+        {
+          "id": "mmtshell",
+          "name": "MMT Shell",
+          "type": "webview"
+        }
+      ]
+    },
     "menus": {
       "explorer/context": [
         {

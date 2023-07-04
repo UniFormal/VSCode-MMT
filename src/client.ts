@@ -6,6 +6,7 @@ import * as vscode from 'vscode';
 import { outputChannel } from './output-channel';
 
 import {getJavaOptions} from "./util/getJavaOptions";
+import { MMTServerBuildMessage, MMTServerHandleLineMessage } from './messages';
 
 const clientOptions: language.LanguageClientOptions = {
 	documentSelector: [{ scheme: "file", language: "mmt" }],
@@ -15,10 +16,6 @@ const clientOptions: language.LanguageClientOptions = {
 	revealOutputChannelOn: language.RevealOutputChannelOn.Info,
 	outputChannel: outputChannel
 };
-
-export interface BuildMessage {
-	uri: string;
-}
 
 export class MMTLanguageClient extends language.LanguageClient {
 	public languageId = "mmt";
@@ -30,7 +27,7 @@ export class MMTLanguageClient extends language.LanguageClient {
 	public typecheck(doc: vscode.TextDocument) {
 		const uri = doc.fileName.replace("c:", "C:"); // TODO hack
 		this.sendNotification(
-			new language.ProtocolNotificationType<BuildMessage, void>("mmt/typecheck"),
+			new language.ProtocolNotificationType<MMTServerBuildMessage, void>("mmt/typecheck"),
 			{uri}
 		);
 	}
@@ -38,8 +35,19 @@ export class MMTLanguageClient extends language.LanguageClient {
 	public buildMMTOmdoc(doc: vscode.TextDocument) {
 		const uri = doc.fileName.replace("c:", "C:"); // TODO hack
 		this.sendNotification(
-			new language.ProtocolNotificationType<BuildMessage, void>("mmt/build/mmt-omdoc"),
+			new language.ProtocolNotificationType<MMTServerBuildMessage, void>("mmt/build/mmt-omdoc"),
 			{uri}
+		);
+	}
+
+	public runMSLFile(uri: vscode.Uri) {
+		outputChannel.appendLine(`Running MSL file \`${uri}\`.`);
+	}
+
+	public handleLine(line: string) {
+		this.sendNotification(
+			new language.ProtocolNotificationType<MMTServerHandleLineMessage, void>("mmt/shell/handleline"),
+			{line}
 		);
 	}
 }

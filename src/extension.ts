@@ -4,6 +4,8 @@ import debounce from "debounce";
 import { assert } from 'console';
 import { MMTLanguageClient, launchMMT } from './client';
 import { outputChannel } from './output-channel';
+import { MMTShell } from './shellview';
+import { MMTLogEntry } from './messages';
 /**
  * invariant: if in extension context 'mmt.loaded' is true, then client is non-null and client?.state === State.Running.
  *
@@ -13,6 +15,9 @@ let client: MMTLanguageClient|null = null;
 
 export function activate(context: vscode.ExtensionContext) {
 	vscode.commands.executeCommand('setContext', 'mmt.loaded', false);
+
+	const mmtShell = new MMTShell(context.extensionUri, () => client);
+	context.subscriptions.push(vscode.window.registerWebviewViewProvider(MMTShell.viewId, mmtShell));
 
 	context.subscriptions.push(vscode.commands.registerTextEditorCommand("mmt.typecheck", editor => {
 		client?.typecheck(editor.document);
@@ -44,7 +49,11 @@ export function activate(context: vscode.ExtensionContext) {
 			//       and register the corresponding document in its internal state
 			setTimeout(() => client?.buildMMTOmdoc(doc), 750);
 		});
-	}));	
+	}));
+
+	context.subscriptions.push(vscode.commands.registerCommand("mmt.runmsl", (uri: vscode.Uri) => {
+		client?.runMSLFile(uri);
+	}));
 
 	context.subscriptions.push(vscode.commands.registerCommand("mmt.reload", () => {
 		vscode.commands.executeCommand('setContext', 'mmt.loaded', false);
@@ -57,7 +66,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}
 
 		client = null;
-		loadMMTClient(context);
+		loadMMTClient(context, mmtShell);
 	}));
 
 	const checkTimeout = vscode.workspace.getConfiguration("mmt").get<number>("ui.checkTimeout") || -1;
@@ -99,10 +108,10 @@ export function activate(context: vscode.ExtensionContext) {
 	}
 
 	outputChannel.show();
-	loadMMTClient(context);
+	loadMMTClient(context, mmtShell);
 }
 
-function loadMMTClient(context: vscode.ExtensionContext): void {
+function loadMMTClient(context: vscode.ExtensionContext, shell: MMTShell): void {
 	if (client !== null) {
 		vscode.window.showErrorMessage("Internal error of MMT extension: " +
 			"we were instructed to reload the client despite client !== null yet.");
@@ -131,6 +140,10 @@ function loadMMTClient(context: vscode.ExtensionContext): void {
 					case language.State.Running:
 						vscode.commands.executeCommand('setContext', 'mmt.loaded', true);
 						progress.report({message: "MMT Server started"});
+
+						newClient.onRequest("shellLog", (msg: MMTLogEntry) => {
+							shell.log(msg);
+						});
 						break;
 	
 					case language.State.Stopped:
