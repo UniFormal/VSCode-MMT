@@ -42,10 +42,11 @@ Currently no code completion or lenses.
 
 ## Release Notes
 
-## Unreleased
+## 0.3.0
 
-- Integrated MMT shell
-- *Go To Definition* functionality is now more fine-grained only applicable on notations of a term (and not ambigiously on notations of its subterms)
+- Fixed archives not being loaded on Windows (if they were on drives other than `C:`) and \*nix systems
+- Integrated a preliminary MMT shell
+- *Go To Definition* functionality is now more fine-grained and only applicable on notations of a term (and not ambigiously on notations of its subterms)
 
 ## 0.2.0
 

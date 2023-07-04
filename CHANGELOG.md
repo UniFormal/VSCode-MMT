@@ -6,14 +6,16 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## Unreleased
 
+## [0.3.0] -- 2023-07-05
+
 ### Added
 
-- Integrated MMT shell
-- *Go To Definition* functionality is now more fine-grained only applicable on notations of a term (and not ambigiously on notations of its subterms)
+- Integrated a preliminary MMT shell
+- *Go To Definition* functionality is now more fine-grained and only applicable on notations of a term (and not ambigiously on notations of its subterms)
 
 ### Fixed
 
-- more robust way of handling non-standard workspace/archive paths (e.g., with drive letters other than `C:` on Windows) and better error reporting
+- Archives are now loaded at all on Windows (if they were on drives other than `C:`) and \*nix systems
 
 ## [0.2.0] -- 2023-05-16
 
