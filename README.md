@@ -42,9 +42,9 @@ Currently no code completion or lenses.
 
 ## Release Notes
 
-## 0.3.0
+## 0.3.1
 
-- Fixed archives not being loaded on Windows (if they were on drives other than `C:`) and \*nix systems
+- Fixed archives not being loaded on Windows (if they were on drives other than `C:`), macOS and Linux derivates
 - Integrated a preliminary MMT shell
 - *Go To Definition* functionality is now more fine-grained and only applicable on notations of a term (and not ambigiously on notations of its subterms)
 

@@ -6,6 +6,12 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## Unreleased
 
+## [0.3.1] -- 2023-07-05
+
+### Fixed
+
+- Archives are now correctly loaded on case-sensitive file and operating systems (incl. most \*nix systems)
+
 ## [0.3.0] -- 2023-07-05
 
 ### Added
@@ -15,7 +21,7 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ### Fixed
 
-- Archives are now loaded at all on Windows (if they were on drives other than `C:`) and \*nix systems
+- Archives are now loaded at all on Windows (if they were on drives other than `C:`) and \*nix systems [retrospective comment: this only fixe it for Windows and macOS, actually not for most Linux derivates, see version 0.3.1]
 
 ## [0.2.0] -- 2023-05-16
 
