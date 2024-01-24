@@ -134,12 +134,26 @@
                 }
             ]
         },
+        "mmtrule" : {
+            "name" : "mmt.rule",
+            "begin" : "rule[ \\t\\r\\n]+",
+            "end" : "[ \\t\\r\\n]*(❙|(?=❚))",
+            "beginCaptures" : {
+                "0": {"name": "keyword.other.import.mmt"}
+            },
+            "endCaptures" : {
+                "0" : {"name": "punctuation.definition.mmt.dd"}
+            },
+            "patterns" : [
+                {"include" : "#parametricuri"}
+            ]
+        },
         "mmtinclude" : {
             "name" : "mmt.include",
             "begin" : "include[ \\t\\r\\n]+",
             "end" : "[ \\t\\r\\n]*(❙|(?=❚))",
             "beginCaptures" : {
-                "0": {"name": "mmt.keyword"}
+                "0": {"name": "keyword.other.import.mmt"}
             },
             "endCaptures" : {
                 "0" : {"name": "punctuation.definition.mmt.dd"}
@@ -524,15 +538,16 @@
         "theorybody" : {
             "patterns" : [
                 {"include" : "#whitespace"},
+                {"include" : "#mmtrule"},
                 {"include" : "#mmtinclude"},
                 {"include" : "#theory"},
                 {"include" : "#view"},
                 {"include" : "#structure"},
                 {"include" : "#declcomment"},
                 {"include" : "#declsemcomment"},
-                {"include" : "#feature"},
                 {"include" : "#explicitconstant"},
-                {"include" : "#constant"}
+                {"include" : "#constant"},
+                {"include" : "#feature"}
             ]
         }
     },
