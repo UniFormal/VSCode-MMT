@@ -164,11 +164,11 @@
             "markdownDescription": "When `#mmt.execution.runmode#` is set to `jar`, holds the path to an MMT distribution in form of an [mmt.jar](https://github.com/UniFormal/MMT/releases) here. Leave empty to use mmt.jar bundled with this extension.",
             "order": 2
           },
-          "mmt.invocation.javaFlags": {
-            "title": "Java Flags for jar Mode",
+          "mmt.invocation.javaOptions": {
+            "title": "Additional Java Options for jar Mode",
             "type": "string",
             "default": "",
-            "markdownDescription": "When `#mmt.execution.runmode#` is set to `jar`, optionally specifies command-line flags passed to `java` invocation."
+            "markdownDescription": "When `#mmt.execution.runmode#` is set to `jar`, optionally specifies command-line options passed to `java` invocation. Separate options by a single space. No other spaces allowed."
           },
           "mmt.ui.checkTimeout": {
             "title": "Typechecking-on-Keypress Timeout",

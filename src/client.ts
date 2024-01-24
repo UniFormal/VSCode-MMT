@@ -5,7 +5,6 @@ import * as path from "path";
 import * as vscode from 'vscode';
 import { outputChannel } from './output-channel';
 
-import {getJavaOptions} from "./util/getJavaOptions";
 import { MMTServerBuildMessage, MMTServerHandleLineMessage } from './messages';
 
 const clientOptions: language.LanguageClientOptions = {
@@ -53,6 +52,8 @@ export class MMTLanguageClient extends language.LanguageClient {
 }
 
 export async function launchMMT(context: vscode.ExtensionContext, projectHome: string): Promise<MMTLanguageClient> {
+	outputChannel.appendLine("Initializing MMT LSP Server...");
+
 	const serverOptions = await ServerOptions.loadFromConfiguration(context, projectHome);
 	const languageClient = new MMTLanguageClient(serverOptions, clientOptions);
 
@@ -75,11 +76,14 @@ class ServerOptions {
 	}
 
 	private static mainJavaClass = "info.kwarc.mmt.lsp.mmt.Main";
+	private static socketHost = "localhost";
 	private static socketPort = 5007;
 
 	public static async forSocket(): Promise<language.ServerOptions> {
+		outputChannel.appendLine(`MMT will be queried via socket on ${ServerOptions.socketHost}:${ServerOptions.socketPort}.`);
+
 		return Promise.resolve(() => {
-			const socket = net.connect({port: ServerOptions.socketPort});
+			const socket = net.connect({port: ServerOptions.socketPort, host: ServerOptions.socketHost});
 			return Promise.resolve<language.StreamInfo>({
 				writer: socket,
 				reader: socket
@@ -109,30 +113,18 @@ class ServerOptions {
 		const javaPath = path.join(javaHome, "bin", "java");
 		const mmtJarPath = (() => {
 			const optionMmtJar = config.get<string>("invocation.mmtJar");
-			if (optionMmtJar === "") {
+			if (typeof optionMmtJar === "undefined" || optionMmtJar === "") {
+				// use (seen relatively to the user possibly outdated) jar bundled with extension
 				return context.asAbsolutePath("lib/mmt.jar");
 			} else {
 				return optionMmtJar;
 			}
 		})();
 
-		if(!mmtJarPath) { 
-			const openSettingsAction = "Open settings";
-			vscode.window.showErrorMessage("Path to MMT jar not set", openSettingsAction)
-			.then(choice => {
-				if (choice === openSettingsAction) {
-					vscode.commands.executeCommand("workbench.action.openSettings");
-				}
-			});
-			return Promise.reject();
-		}
-	
-		const serverProperties: string[] = config
-			.get<string>("invocation.javaFlags")!
-			.split(" ")
-			.filter(e => e.length > 0);
-	
-		const javaOptions = getJavaOptions(outputChannel);
+		// naively parse user-configured Java option string into an array of options
+		// => no spaces are allowed in that option string other than to separate the individual options
+		// todo: this is brittle
+		const javaOptions = config.get<string>("invocation.javaOptions")?.split(" ") || [];
 		const launchArgs: string[] = [
 			"-Xmx8192m",
 			"-classpath",
@@ -143,10 +135,9 @@ class ServerOptions {
 			projectHome // todo: necessary?
 		];
 
-		outputChannel.appendLine("Initializing MMT LSP Server");
 		// todo: the debug message below naively concatenates arguments via space, might differ from how the OS
 		// is actually instructed to invoke the command because in launchArgs the arguments are provided separately
-		outputChannel.appendLine(`MMT will be run via JAR: \`${javaPath} ${launchArgs.join(" ")}\``);
+		outputChannel.appendLine(`MMT will be run via JAR: \`${javaPath} ${launchArgs.join(" ")}\`.`);
 	
 		return Promise.resolve({
 			run:   { command: javaPath, args: launchArgs },
