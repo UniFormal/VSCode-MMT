@@ -6,6 +6,15 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## Unreleased
 
+### Added
+
+- Go-To-Definition Functionality for module references, including includes, structure domains, and specified meta theories
+
+### Fixed
+
+- Improved syntax highlighting of includes, rules, and explicit constants
+- Improved logging of how the connection to the MMT LSP server is established
+
 ## [0.3.1] -- 2023-07-05
 
 ### Fixed
