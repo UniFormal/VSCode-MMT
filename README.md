@@ -42,6 +42,11 @@ Currently no code completion or lenses.
 
 ## Release Notes
 
+## 0.4.0
+
+- Added go-to-definition functionality for module references, including includes, structure domains, and specified meta theories
+- Improved syntax highlighting of includes, rules, and explicit constants
+
 ## 0.3.1
 
 - Fixed archives not being loaded on Windows (if they were on drives other than `C:`), macOS and Linux derivates

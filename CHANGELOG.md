@@ -7,6 +7,11 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## Unreleased
 
 ### Added
+### Fixed
+
+## [0.4.0] -- 2024-01-29y
+
+### Added
 
 - Go-To-Definition Functionality for module references, including includes, structure domains, and specified meta theories
 

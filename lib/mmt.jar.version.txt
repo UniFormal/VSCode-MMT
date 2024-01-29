@@ -1,2 +1,2 @@
 Version of mmt.jar specified by the commit of the MMT repository at <https://github.com/UniFormal/MMT> it was built from:
-cb4edfe141f00be4598b14d122631503790ca2b6
+92b447e62fab194bb89c3e1adb450d5a11b94736
