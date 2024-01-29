@@ -124,7 +124,9 @@ class ServerOptions {
 		// naively parse user-configured Java option string into an array of options
 		// => no spaces are allowed in that option string other than to separate the individual options
 		// todo: this is brittle
-		const javaOptions = config.get<string>("invocation.javaOptions")?.split(" ") || [];
+		const javaOptionsString = config.get<string>("invocation.javaOptions") || "";
+		const javaOptions = javaOptionsString === "" ? [] : javaOptionsString.split(" ");
+
 		const launchArgs: string[] = [
 			"-Xmx8192m",
 			"-classpath",
