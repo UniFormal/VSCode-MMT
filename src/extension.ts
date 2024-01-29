@@ -118,6 +118,11 @@ function loadMMTClient(context: vscode.ExtensionContext, shell: MMTShell): void 
 		return;
 	}
 
+	/**
+	 * Timeout in seconds to show an error message after initiating the connection to MMT.
+	 */
+	const CONNECTING_MMT_TIMEOUT = 10_000;
+
 	vscode.window.withProgress({
 		title: "Loading MMT",
 		location: vscode.ProgressLocation.Window,
@@ -161,7 +166,7 @@ function loadMMTClient(context: vscode.ExtensionContext, shell: MMTShell): void 
 					if (!startedAlready) {
 						reject("Starting of MMT Server timed out");
 					}
-				}, 8000);
+				}, CONNECTING_MMT_TIMEOUT);
 
 				newClient.start().then(() => {
 					startedAlready = true;
