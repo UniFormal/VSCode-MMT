@@ -107,6 +107,26 @@ export function activate(context: vscode.ExtensionContext) {
 		}));
 	}
 
+	const MMT_PRESENT_GENERATED_SCHEME = 'mmt-generated';
+	context.subscriptions.push(vscode.workspace.registerTextDocumentContentProvider(MMT_PRESENT_GENERATED_SCHEME, new (class implements vscode.TextDocumentContentProvider {
+		async provideTextDocumentContent(uri: vscode.Uri, token: vscode.CancellationToken) {
+			const doc = await vscode.workspace.openTextDocument(uri.with({scheme: 'file'}));
+			return client?.presentGenerated(doc);
+		}
+	})));
+
+	context.subscriptions.push(vscode.commands.registerCommand('mmt.present-generated', async () => {
+		if (!vscode.window.activeTextEditor) {
+			return;
+		}
+		const { document: doc } = vscode.window.activeTextEditor;
+		if (doc.languageId !== 'mmt') {
+			return;
+		}
+
+		await vscode.window.showTextDocument(doc.uri.with({ scheme: MMT_PRESENT_GENERATED_SCHEME }), { preview: false });
+	}));
+
 	outputChannel.show();
 	loadMMTClient(context, mmtShell);
 }

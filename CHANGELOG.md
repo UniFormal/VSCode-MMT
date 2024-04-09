@@ -7,6 +7,9 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 ## Unreleased
 
 ### Added
+
+- Show-Parsed-Source Functionality
+
 ### Fixed
 
 ## [0.4.0] -- 2024-01-29y

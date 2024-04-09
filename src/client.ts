@@ -49,6 +49,15 @@ export class MMTLanguageClient extends language.LanguageClient {
 			{line}
 		);
 	}
+
+	public async presentGenerated(doc: vscode.TextDocument): Promise<string> {
+		const uri = doc.fileName.replace("c:", "C:"); // TODO hack
+		const presentedCode: string = await this.sendRequest<MMTServerBuildMessage, string, void>(
+			new language.RequestType<MMTServerBuildMessage, string, void>("mmt/present-generated"),
+			{uri}
+		);
+		return presentedCode;
+	}
 }
 
 export async function launchMMT(context: vscode.ExtensionContext, projectHome: string): Promise<MMTLanguageClient> {

@@ -61,6 +61,11 @@
         "command": "mmt.runmsl",
         "title": "Run MMT Scripting Language (*.msl) File",
         "enablement": "resourceExtname == .msl && mmt.loaded"
+      },
+      {
+        "command": "mmt.present-generated",
+        "title": "🔍 Generated",
+        "enablement": "resourceExtname == .mmt && mmt.loaded"
       }
     ],
     "viewsContainers": {
@@ -107,6 +112,13 @@
         {
           "command": "mmt.buildmmtomdocFile",
           "when": "resourceExtname == .nonexistinggggggggggggggg"
+        }
+      ],
+      "editor/title": [
+        {
+          "command": "mmt.present-generated",
+          "group": "navigation",
+          "when": "resourceExtname == .mmt && mmt.loaded"
         }
       ]
     },
